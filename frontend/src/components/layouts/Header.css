@@ -1,0 +1,21 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 26px;
+    border-bottom: 3px solid var(--ink);
+    background: var(--panel);
+}
+
+.app-title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+    transform: rotate(-2deg);
+    letter-spacing: 1px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 10px;
+}

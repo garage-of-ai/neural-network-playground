@@ -1,0 +1,74 @@
+.dataset-carousel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.dataset-focus {
+    border: 2.5px solid var(--ink);
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: var(--shadow);
+    padding: 10px;
+    text-align: center;
+    width: 150px;
+    user-select: none;
+}
+
+.dataset-focus canvas {
+    display: block;
+    margin: 0 auto;
+    border-radius: 10px;
+}
+
+.dataset-name {
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 6px;
+}
+
+.carousel-arrow {
+    flex: 0 0 auto;
+    width: 0;
+    height: 0;
+    border-top: 11px solid transparent;
+    border-bottom: 11px solid transparent;
+    background: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.carousel-arrow--left {
+    border-right: 16px solid var(--ink);
+}
+
+.carousel-arrow--right {
+    border-left: 16px solid var(--ink);
+}
+
+.carousel-arrow:hover {
+    opacity: 0.6;
+}
+
+.dataset-confirm {
+    display: block;
+    width: 100%;
+    margin: 12px 0 4px;
+    text-align: center;
+}
+
+.slider-row {
+    margin: 10px 0;
+}
+
+.slider-row label {
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.slider-row input[type='range'] {
+    width: 100%;
+    accent-color: var(--accent-pos);
+}

@@ -1,0 +1,145 @@
+.network-panel {
+    display: flex;
+    flex-direction: column;
+    height: 540px;
+}
+
+.network-stage {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    display: flex;
+    background-color: #fffdf7;
+    background-image:
+        linear-gradient(#00000010 1px, transparent 1px),
+        linear-gradient(90deg, #00000010 1px, transparent 1px);
+    background-size: 48px 48px;
+    border: 2px dashed #bdb4a3;
+    border-radius: 12px;
+    overflow: auto;
+}
+
+.network-inner {
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.network-edges {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.edge {
+    fill: none;
+    stroke-opacity: 0.75;
+    stroke-linecap: round;
+    cursor: pointer;
+    transition: stroke-opacity 0.15s, filter 0.15s;
+}
+
+.edge:hover,
+.edge--hot {
+    stroke-opacity: 1;
+    filter: drop-shadow(0 0 3px rgba(46, 42, 38, 0.45));
+}
+
+.edge--dim {
+    stroke-opacity: 0.08;
+}
+
+.edge-tooltip {
+    position: absolute;
+    transform: translate(-50%, -135%);
+    background: var(--ink);
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.layer-label {
+    position: absolute;
+    top: 0;
+    height: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 11px;
+    color: #8a8377;
+    text-align: center;
+}
+
+.neuron {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2.5px solid var(--ink);
+    background: #fff9e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    box-shadow: 2px 2px 0 var(--ink);
+    position: absolute;
+    z-index: 2;
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+.neuron:hover {
+    transform: scale(1.15);
+}
+
+.neuron--input {
+    background: #cfe8ff;
+}
+
+.neuron--output {
+    background: #ffd6d6;
+}
+
+.activation-tag {
+    font-size: 10px;
+    background: #eee2c9;
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    padding: 1px 6px;
+    margin-top: 2px;
+}
+
+.legend {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    font-size: 12px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.legend .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 4px;
+    border: 1.5px solid var(--ink);
+}
+
+.dot--pos {
+    background: var(--accent-pos);
+}
+
+.dot--zero {
+    background: var(--accent-zero);
+}
+
+.dot--neg {
+    background: var(--accent-neg);
+}

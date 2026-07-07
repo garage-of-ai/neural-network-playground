@@ -1,0 +1,133 @@
+.abstract-panel {
+    margin-top: 16px;
+}
+
+.abstract-scroll {
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.abstract-stack {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 4px;
+    width: max-content;
+}
+
+.abstract-box {
+    min-width: 170px;
+    flex-shrink: 0;
+    border: 2.5px solid var(--ink);
+    border-radius: 12px;
+    background: #fff9e8;
+    box-shadow: var(--shadow);
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.abstract-box--input {
+    background: #cfe8ff;
+}
+
+.abstract-box--output {
+    background: #ffd6d6;
+}
+
+.box-info {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.box-info b {
+    display: block;
+}
+
+.box-info .act-name {
+    font-size: 11px;
+    color: #5c564c;
+    margin-left: 4px;
+}
+
+.box-controls {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.unit-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border: 1.5px solid var(--ink);
+    border-radius: 8px;
+    padding: 2px 4px;
+    background: #fff;
+}
+
+.mini-btn {
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    background: #fff;
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+}
+
+.mini-btn.remove-layer {
+    background: var(--accent-neg);
+    color: #fff;
+}
+
+.arrow-right {
+    width: 0;
+    height: 0;
+    margin: 0 2px;
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-left: 16px solid var(--ink);
+    flex-shrink: 0;
+}
+
+.insert-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 2px;
+    flex-shrink: 0;
+}
+
+.insert-line {
+    width: 0;
+    height: 18px;
+    border-left: 2px dashed #bdb4a3;
+}
+
+.insert-btn {
+    border: 2px dashed var(--ink);
+    background: transparent;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 11px;
+    padding: 2px 8px;
+    color: #8a8377;
+    cursor: pointer;
+}
+
+.insert-btn:hover {
+    background: #fff2c9;
+    color: var(--ink);
+}

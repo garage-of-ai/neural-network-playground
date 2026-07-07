@@ -1,4 +1,5 @@
 import './App.css'
+import AppProviders from './context/AppProviders'
 import AbstractArchitecture from './components/architectures/AbstractArchitecture'
 import CheckPanel from './components/training/CheckPanel'
 import DatasetPanel from './components/datasets/DatasetPanel'
@@ -10,24 +11,26 @@ import TrainingControls from './components/training/TrainingControls'
 
 function App() {
     return(
-        <div id="netlab">
-            <Header />
-            <div className="content">
-                <div className="col left">
-                    <DatasetPanel />
-                    <TrainConfigPanel />
+        <AppProviders>
+            <div id="netlab">
+                <Header />
+                <div className="content">
+                    <div className="col left">
+                        <DatasetPanel />
+                        <TrainConfigPanel />
+                    </div>
+                    <div className="col center">
+                        <NetworkArchitecture />
+                        <AbstractArchitecture />
+                    </div>
+                    <div className="col right">
+                        <TrainingControls />
+                        <CheckPanel />
+                    </div>
                 </div>
-                <div className="col center">
-                    <NetworkArchitecture />
-                    <AbstractArchitecture />
-                </div>
-                <div className="col right">
-                    <TrainingControls />
-                    <CheckPanel />
-                </div>
+                <Footer />
             </div>
-            <Footer />
-        </div>
+        </AppProviders>
     )
 }
 

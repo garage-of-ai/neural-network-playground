@@ -1,0 +1,35 @@
+.transport {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.transport .doodle-btn {
+    font-size: 16px;
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.transport-step {
+    height: 56px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.transport-row {
+    display: flex;
+    gap: 10px;
+}
+
+.transport-row .doodle-btn {
+    flex: 1;
+    height: 32px;
+}
+
+.transport-reset {
+    height: 32px;
+    font-size: 14px;
+}

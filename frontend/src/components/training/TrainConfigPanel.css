@@ -1,0 +1,52 @@
+.collapsible-header {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+
+.collapse-arrow {
+    display: inline-block;
+    transition: transform 0.25s ease;
+    font-size: 14px;
+}
+
+.collapsible-panel.collapsed .collapse-arrow {
+    transform: rotate(-90deg);
+}
+
+.collapsible-body {
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.28s ease, opacity 0.28s ease;
+    opacity: 1;
+}
+
+.collapsible-panel.collapsed .collapsible-body {
+    grid-template-rows: 0fr;
+    opacity: 0;
+}
+
+.collapsible-body-inner {
+    overflow: hidden;
+    min-height: 0;
+}
+
+.field-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 8px 0;
+    font-size: 13px;
+}
+
+.field-row select,
+.value-pill {
+    font-family: inherit;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    padding: 3px 8px;
+    background: #fff;
+    width: 90px;
+}

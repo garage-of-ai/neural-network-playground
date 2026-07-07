@@ -1,0 +1,24 @@
+#netlab {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1;
+    display: grid;
+    /* tỉ lệ 1 : 2 : 1 — minmax giữ bề rộng tối thiểu để form/chart không bị bóp méo */
+    grid-template-columns: minmax(250px, 1fr) minmax(0, 3fr) minmax(300px, 1fr);
+    gap: 18px;
+    padding: 18px 22px;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.col > .panel + .panel {
+    margin-top: 16px;
+}
