@@ -1,12 +1,12 @@
 import './App.css'
 import AbstractArchitecture from './components/architectures/AbstractArchitecture'
-import CheckPanel from './components/CheckPanel'
+import CheckPanel from './components/training/CheckPanel'
 import DatasetPanel from './components/datasets/DatasetPanel'
 import Footer from './components/layouts/Footer'
 import Header from './components/layouts/Header'
 import NetworkArchitecture from './components/architectures/NetworkArchitecture'
-import TrainConfigPanel from './components/TrainConfigPanel'
-import TrainingControls from './components/TrainingControls'
+import TrainConfigPanel from './components/training/TrainConfigPanel'
+import TrainingControls from './components/training/TrainingControls'
 
 function App() {
     return(
