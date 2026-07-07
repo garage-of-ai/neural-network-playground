@@ -17,6 +17,12 @@
     border: 2px dashed #bdb4a3;
     border-radius: 12px;
     overflow: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.network-stage::-webkit-scrollbar {
+    display: none;
 }
 
 .network-inner {

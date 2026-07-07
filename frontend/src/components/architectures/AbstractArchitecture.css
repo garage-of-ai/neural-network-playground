@@ -6,6 +6,12 @@
     min-width: 0;
     overflow-x: auto;
     overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.abstract-scroll::-webkit-scrollbar {
+    display: none;
 }
 
 .abstract-stack {
