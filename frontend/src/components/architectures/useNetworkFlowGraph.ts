@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import type { Edge, Node } from '@xyflow/react'
 import type { LayerConfig, NetworkWeights } from '../../types'
-import { COL_WIDTH, NEURON_SIZE, computeLayerPositions } from './layoutMath'
+import { NEURON_SIZE, computeLayerPositions } from './layoutMath'
 
 export interface ActiveNeuron {
     layerIndex: number
@@ -14,13 +14,6 @@ export interface NeuronNodeData extends Record<string, unknown> {
     kind: LayerConfig['kind']
     exiting: boolean
     onToggle: (layerIndex: number, unitIndex: number) => void
-    onExited: (nodeId: string) => void
-}
-
-export interface LayerLabelNodeData extends Record<string, unknown> {
-    label: string
-    activation?: LayerConfig['activation']
-    exiting: boolean
     onExited: (nodeId: string) => void
 }
 
@@ -53,21 +46,6 @@ export function useNetworkFlowGraph(
         const nodes: Node[] = []
 
         architecture.forEach((layer, li) => {
-            const labelId = `label-${layer.id}`
-            nodes.push({
-                id: labelId,
-                type: 'layerLabel',
-                position: { x: li * COL_WIDTH, y: 0 },
-                draggable: false,
-                selectable: false,
-                data: {
-                    label: layer.label,
-                    activation: layer.activation,
-                    exiting: false,
-                    onExited: callbacks.onExited,
-                } satisfies LayerLabelNodeData,
-            })
-
             layout[li].neurons.forEach(({ unitIndex: ni, x, y }) => {
                 const id = `neuron-${layer.id}-${ni}`
                 nodes.push({

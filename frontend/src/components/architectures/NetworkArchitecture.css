@@ -23,7 +23,7 @@
 
 /* React Flow mặc định vẽ node/edge theo style riêng (khung xám, viền chọn
    xanh...) — null hoá toàn bộ chrome mặc định để chỉ còn style doodle tự vẽ
-   trong NeuronNode/LayerLabelNode/EllipsisNode/WeightEdge hiển thị */
+   trong NeuronNode/EllipsisNode/WeightEdge hiển thị */
 .network-stage .react-flow__node {
     background: none;
     border: none;
@@ -89,11 +89,33 @@
     z-index: 5;
 }
 
+/* hàng label cố định ở đáy network-stage — tách khỏi lớp pan của đồ thị
+   (xem LayerLabelBar.tsx), không di chuyển theo Y khi kéo, chỉ label bên
+   trong dịch theo X để bám đúng cột layer. z-index cao hơn hẳn đồ thị
+   (.react-flow__renderer = 4) để khi mạng lớn tràn xuống đáy, phần bị nền
+   phủ che đi là neuron/edge chứ không phải label */
+.layer-label-bar {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    height: 64px;
+    overflow: hidden;
+    background: rgba(255, 250, 240, 0.5);
+    /* border: 2px solid var(--ink); */
+    border-radius: 10px;
+    /* box-shadow: 2px 2px 0 var(--ink); */
+    pointer-events: none;
+    z-index: 10;
+}
+
 .layer-label {
-    height: 40px;
+    position: absolute;
+    top: 0;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: center;
     align-items: center;
     font-size: 11px;
     color: #8a8377;
