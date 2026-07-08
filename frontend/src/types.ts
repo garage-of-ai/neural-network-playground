@@ -10,6 +10,7 @@ export type ActivationFn = 'relu' | 'tanh' | 'sigmoid' | 'linear' | 'softmax'
 export type LayerKind = 'input' | 'hidden' | 'output'
 
 export interface LayerConfig {
+    id: string
     units: number
     kind: LayerKind
     label: string

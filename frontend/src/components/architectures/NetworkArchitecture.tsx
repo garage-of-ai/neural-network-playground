@@ -1,6 +1,17 @@
 import { Fragment, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
 import { useNetwork } from '../../context/NetworkContext'
-import { COL_WIDTH, NEURON_SIZE, bezierMidpoint, bezierPath, computeLayerPositions, stageSize, weightColor } from './layoutMath'
+import { useTraining } from '../../context/TrainingContext'
+import {
+    COL_WIDTH,
+    NEURON_SIZE,
+    bezierMidpoint,
+    bezierPath,
+    computeLayerPositions,
+    stageSize,
+    weightColor,
+} from './layoutMath'
+import NetworkPulse from './NetworkPulse'
 import './NetworkArchitecture.css'
 
 interface ActiveNeuron {
@@ -14,12 +25,22 @@ interface Tooltip {
     weight: number
 }
 
+// spring "nảy" khi 1 layer/neuron mới vừa được chèn — chỉ phần tử THẬT SỰ mới
+// mount (key=layer.id chưa từng render) mới chạy animation này, các phần tử
+// còn lại chỉ dịch chuyển vị trí êm nhờ layout animation của Framer Motion
+const popIn = {
+    initial: { scale: 0.25, opacity: 0 },
+    animate: { scale: 1, opacity: 1 },
+    transition: { type: 'spring' as const, stiffness: 420, damping: 18 },
+}
+
 function NetworkArchitecture() {
     const { architecture, weights } = useNetwork()
+    const { pulseSignal } = useTraining()
     const [activeNeuron, setActiveNeuron] = useState<ActiveNeuron | null>(null)
     const [tooltip, setTooltip] = useState<Tooltip | null>(null)
 
-    const positions = computeLayerPositions(architecture)
+    const layout = computeLayerPositions(architecture)
     const { width, height } = stageSize(architecture)
 
     const toggleNeuron = (layerIndex: number, unitIndex: number) => {
@@ -37,9 +58,9 @@ function NetworkArchitecture() {
             <div className="network-stage" onClick={() => setActiveNeuron(null)}>
                 <div className="network-inner" style={{ width, height }}>
                     <svg className="network-edges" viewBox={`0 0 ${width} ${height}`}>
-                        {positions.slice(0, -1).map((fromLayer, li) =>
-                            fromLayer.map((fromPos, i) =>
-                                positions[li + 1].map((toPos, j) => {
+                        {layout.slice(0, -1).map((fromLayer, li) =>
+                            fromLayer.neurons.map(({ unitIndex: i, ...fromPos }) =>
+                                layout[li + 1].neurons.map(({ unitIndex: j, ...toPos }) => {
                                     const w = weights[li][i][j]
                                     // chỉ giữ sáng các cạnh ĐẾN node đang được toggle
                                     const isIncomingToActive =
@@ -68,28 +89,49 @@ function NetworkArchitecture() {
                                 }),
                             ),
                         )}
+                        <NetworkPulse architecture={architecture} layout={layout} pulseSignal={pulseSignal} />
                     </svg>
 
                     {architecture.map((layer, li) => (
-                        <Fragment key={li}>
-                            <div className="layer-label" style={{ left: li * COL_WIDTH, width: COL_WIDTH }}>
+                        <Fragment key={layer.id}>
+                            <motion.div
+                                layout
+                                className="layer-label"
+                                style={{ left: li * COL_WIDTH, width: COL_WIDTH }}
+                            >
                                 <b>{layer.label}</b>
                                 {layer.activation && <div className="activation-tag">{layer.activation}</div>}
-                            </div>
-                            {positions[li].map((pos, ni) => (
+                            </motion.div>
+                            <AnimatePresence initial={false}>
+                                {layout[li].neurons.map(({ unitIndex: ni, x, y }) => (
+                                    <motion.div
+                                        key={`${layer.id}-${ni}`}
+                                        layout
+                                        {...popIn}
+                                        className={`neuron neuron--${layer.kind}`}
+                                        style={{ left: x - NEURON_SIZE / 2, top: y - NEURON_SIZE / 2 }}
+                                        onClick={(e) => {
+                                            e.stopPropagation()
+                                            toggleNeuron(li, ni)
+                                        }}
+                                    >
+                                        {layer.kind === 'input' && `x${ni + 1}`}
+                                        {layer.kind === 'output' && 'ŷ'}
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+                            {layout[li].ellipsis && (
                                 <div
-                                    key={ni}
-                                    className={`neuron neuron--${layer.kind}`}
-                                    style={{ left: pos.x - NEURON_SIZE / 2, top: pos.y - NEURON_SIZE / 2 }}
-                                    onClick={(e) => {
-                                        e.stopPropagation()
-                                        toggleNeuron(li, ni)
+                                    className="layer-ellipsis"
+                                    style={{
+                                        left: layout[li].neurons[0].x - NEURON_SIZE / 2,
+                                        top: layout[li].ellipsis.y - NEURON_SIZE / 2,
                                     }}
+                                    title={`còn ${layout[li].ellipsis.hiddenCount} unit nữa`}
                                 >
-                                    {layer.kind === 'input' && `x${ni + 1}`}
-                                    {layer.kind === 'output' && 'ŷ'}
+                                    ⋮
                                 </div>
-                            ))}
+                            )}
                         </Fragment>
                     ))}
 

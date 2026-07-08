@@ -1,6 +1,16 @@
 import { Fragment } from 'react'
+import { motion } from 'motion/react'
 import { useNetwork } from '../../context/NetworkContext'
 import './AbstractArchitecture.css'
+
+// spring "nảy" khi 1 box mới vừa được chèn — chỉ box THẬT SỰ mới mount (key=
+// layer.id chưa từng render) mới chạy animation này; các box còn lại chỉ dịch
+// chuyển vị trí êm nhờ layout animation của Framer Motion
+const popIn = {
+    initial: { scale: 0.25, opacity: 0 },
+    animate: { scale: 1, opacity: 1 },
+    transition: { type: 'spring' as const, stiffness: 420, damping: 18 },
+}
 
 function AbstractArchitecture() {
     const { architecture, insertLayer, removeLayer, addUnit, removeUnit } = useNetwork()
@@ -11,7 +21,7 @@ function AbstractArchitecture() {
             <div className="abstract-scroll">
                 <div className="abstract-stack">
                     {architecture.map((layer, li) => (
-                        <Fragment key={li}>
+                        <Fragment key={layer.id}>
                             {li > 0 && (
                                 <div className="insert-row">
                                     <span className="insert-line" />
@@ -21,7 +31,7 @@ function AbstractArchitecture() {
                             )}
                             {li > 0 && <div className="arrow-right" />}
 
-                            <div className={`abstract-box abstract-box--${layer.kind}`}>
+                            <motion.div layout {...popIn} className={`abstract-box abstract-box--${layer.kind}`}>
                                 <div className="box-info">
                                     <b>{layer.label}</b>
                                     <span>{layer.units} unit{layer.units > 1 ? 's' : ''}</span>
@@ -36,7 +46,7 @@ function AbstractArchitecture() {
                                         <button className="mini-btn remove-layer" onClick={() => removeLayer(li)}>x</button>
                                     </div>
                                 )}
-                            </div>
+                            </motion.div>
                         </Fragment>
                     ))}
                 </div>

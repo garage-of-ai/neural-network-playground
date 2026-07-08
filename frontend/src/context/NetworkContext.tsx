@@ -2,11 +2,14 @@ import { createContext, useContext, useState, type ReactNode } from 'react'
 import type { LayerConfig, NetworkWeights } from '../types'
 import { createRandomWeights, jitterWeights as jitterWeightsMatrix } from '../utils/weights'
 
+let nextLayerId = 0
+const makeLayerId = () => `layer-${nextLayerId++}`
+
 const DEFAULT_ARCHITECTURE: LayerConfig[] = [
-    { units: 2, kind: 'input', label: 'Input' },
-    { units: 4, kind: 'hidden', label: 'Hidden Layer', activation: 'relu' },
-    { units: 4, kind: 'hidden', label: 'Hidden Layer', activation: 'tanh' },
-    { units: 1, kind: 'output', label: 'Output', activation: 'sigmoid' },
+    { id: makeLayerId(), units: 2, kind: 'input', label: 'Input' },
+    { id: makeLayerId(), units: 4, kind: 'hidden', label: 'Hidden Layer', activation: 'relu' },
+    { id: makeLayerId(), units: 4, kind: 'hidden', label: 'Hidden Layer', activation: 'tanh' },
+    { id: makeLayerId(), units: 1, kind: 'output', label: 'Output', activation: 'sigmoid' },
 ]
 
 interface NetworkContextValue {
@@ -30,7 +33,7 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
     // batch chung thành 1 re-render) để tránh 2 state lệch nhau ở giữa 2 lần render
     const insertLayer = (atIndex: number) => {
         const next = [...architecture]
-        next.splice(atIndex, 0, { units: 3, kind: 'hidden', label: 'Hidden Layer', activation: 'relu' })
+        next.splice(atIndex, 0, { id: makeLayerId(), units: 3, kind: 'hidden', label: 'Hidden Layer', activation: 'relu' })
         setArchitecture(next)
         setWeights(createRandomWeights(next))
     }

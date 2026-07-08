@@ -22,6 +22,7 @@ interface TrainingContextValue {
     lossHistory: number[]
     accuracyHistory: number[]
     isPlaying: boolean
+    pulseSignal: number
     step: () => void
     runEpoch: () => void
     togglePlay: () => void
@@ -41,10 +42,12 @@ export function TrainingProvider({ children }: { children: ReactNode }) {
     const [lossHistory, setLossHistory] = useState<number[]>([INITIAL_LOSS])
     const [accuracyHistory, setAccuracyHistory] = useState<number[]>([INITIAL_ACCURACY])
     const [isPlaying, setIsPlaying] = useState(false)
+    const [pulseSignal, setPulseSignal] = useState(0)
     const intervalRef = useRef<number | null>(null)
 
     const step = () => {
         setEpoch((e) => e + 1)
+        setPulseSignal((n) => n + 1)
         setLossHistory((prev) => {
             const value = Math.max(0.02, prev[prev.length - 1] * (0.9 + Math.random() * 0.08))
             const next = [...prev, value]
@@ -86,7 +89,7 @@ export function TrainingProvider({ children }: { children: ReactNode }) {
 
     return (
         <TrainingContext.Provider
-            value={{ config, setConfig, epoch, lossHistory, accuracyHistory, isPlaying, step, runEpoch, togglePlay, reset }}
+            value={{ config, setConfig, epoch, lossHistory, accuracyHistory, isPlaying, pulseSignal, step, runEpoch, togglePlay, reset }}
         >
             {children}
         </TrainingContext.Provider>
