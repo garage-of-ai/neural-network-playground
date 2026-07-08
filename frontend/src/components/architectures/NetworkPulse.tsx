@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
+import { useViewport } from '@xyflow/react'
 import type { LayerConfig } from '../../types'
 import { samplePathPoints, type LayerLayout } from './layoutMath'
 
@@ -85,26 +86,33 @@ function NetworkPulse({ architecture, layout, pulseSignal }: NetworkPulseProps) 
 
     const removeSquare = (id: number) => setSquares((prev) => prev.filter((s) => s.id !== id))
 
+    // squares nằm trong svg overlay riêng (anh em của <ReactFlow>), nên cần tự
+    // áp transform pan/zoom của viewport để khớp vị trí với node/edge bên
+    // trong ReactFlow — zoom luôn khoá =1 nhưng x/y đổi khi pan
+    const { x: vx, y: vy, zoom } = useViewport()
+
     if (architecture.length === 0) return null
 
     return (
-        <g className="pulse-layer">
-            {squares.map((sq) => (
-                <motion.rect
-                    key={sq.id}
-                    className="pulse-square"
-                    width={SQUARE_SIZE}
-                    height={SQUARE_SIZE}
-                    rx={2}
-                    x={-SQUARE_SIZE / 2}
-                    y={-SQUARE_SIZE / 2}
-                    initial={{ x: sq.xs[0], y: sq.ys[0], scale: 0.3, opacity: 0 }}
-                    animate={{ x: sq.xs, y: sq.ys, scale: [0.3, 1.15, 1], opacity: 1 }}
-                    transition={{ duration: sq.durationMs / 1000, ease: 'linear' }}
-                    onAnimationComplete={() => removeSquare(sq.id)}
-                />
-            ))}
-        </g>
+        <svg className="pulse-overlay">
+            <g transform={`translate(${vx} ${vy}) scale(${zoom})`}>
+                {squares.map((sq) => (
+                    <motion.rect
+                        key={sq.id}
+                        className="pulse-square"
+                        width={SQUARE_SIZE}
+                        height={SQUARE_SIZE}
+                        rx={2}
+                        x={-SQUARE_SIZE / 2}
+                        y={-SQUARE_SIZE / 2}
+                        initial={{ x: sq.xs[0], y: sq.ys[0], scale: 0.3, opacity: 0 }}
+                        animate={{ x: sq.xs, y: sq.ys, scale: [0.3, 1.15, 1], opacity: 1 }}
+                        transition={{ duration: sq.durationMs / 1000, ease: 'linear' }}
+                        onAnimationComplete={() => removeSquare(sq.id)}
+                    />
+                ))}
+            </g>
+        </svg>
     )
 }
 
