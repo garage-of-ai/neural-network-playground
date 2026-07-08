@@ -81,7 +81,7 @@ function drawDatasetIcon(ctx: CanvasRenderingContext2D, w: number, h: number, ki
     }
 }
 
-function DatasetPreview({ kind, size = 130 }: DatasetPreviewProps) {
+function DatasetPreview({ kind, size = 150 }: DatasetPreviewProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null)
 
     useEffect(() => {

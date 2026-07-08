@@ -12,7 +12,7 @@
     box-shadow: var(--shadow);
     padding: 10px;
     text-align: center;
-    width: 150px;
+    /* width: 150px; */
     user-select: none;
 }
 
@@ -30,25 +30,37 @@
 
 .carousel-arrow {
     flex: 0 0 auto;
-    width: 0;
-    height: 0;
-    border-top: 11px solid transparent;
-    border-bottom: 11px solid transparent;
+    width: 32px;
+    height: 32px;
     background: none;
+    border: none;
     cursor: pointer;
     padding: 0;
 }
 
-.carousel-arrow--left {
-    border-right: 16px solid var(--ink);
+.carousel-arrow svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    filter: drop-shadow(3px 3px 0 var(--ink));
+    transition: transform 0.1s ease, filter 0.1s ease;
 }
 
-.carousel-arrow--right {
-    border-left: 16px solid var(--ink);
+.carousel-arrow svg polygon {
+    fill: #fff;
+    stroke: var(--ink);
+    stroke-width: 2.5px;
+    stroke-linejoin: round;
 }
 
-.carousel-arrow:hover {
-    opacity: 0.6;
+.carousel-arrow:hover svg {
+    transform: translate(-2px, -2px);
+}
+
+.carousel-arrow:active svg {
+    transform: translate(1px, 1px);
+    filter: drop-shadow(1px 1px 0 var(--ink));
 }
 
 .dataset-confirm {

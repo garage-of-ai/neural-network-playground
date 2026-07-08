@@ -27,7 +27,11 @@ function DatasetPanel() {
                     className="carousel-arrow carousel-arrow--left"
                     aria-label="Dataset trước"
                     onClick={() => gotoDataset(-1)}
-                />
+                >
+                    <svg viewBox="0 0 32 32">
+                        <polygon points="26,4 4,16 26,28" />
+                    </svg>
+                </button>
                 <div className="dataset-focus">
                     <DatasetPreview kind={previewKind} />
                     <div className="dataset-name">{previewKind}</div>
@@ -36,7 +40,11 @@ function DatasetPanel() {
                     className="carousel-arrow carousel-arrow--right"
                     aria-label="Dataset kế tiếp"
                     onClick={() => gotoDataset(1)}
-                />
+                >
+                    <svg viewBox="0 0 32 32">
+                        <polygon points="6,4 28,16 6,28" />
+                    </svg>
+                </button>
             </div>
             <button className="doodle-btn primary dataset-confirm" onClick={() => setKind(previewKind)}>
                 Chọn dataset này
