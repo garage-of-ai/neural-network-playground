@@ -1,13 +1,13 @@
 import numpy as np
 
 def zeros_init(shape):
-    pass
+    return np.zeros(shape)
 
 def uniform_init(shape, low = -1.0, high = 1.0):
-    pass
+    return np.random.uniform(low, high, size=shape)
 
 def gaussian_init(shape, mean = 0.0, std = 1.0):
-    pass
+    return np.random.normal(mean, std, size=shape)
 
 _INITIALIZERS = {
     "zeros": zeros_init,
@@ -16,4 +16,6 @@ _INITIALIZERS = {
 }
 
 def get_initializer(name):
-    pass
+    if name not in _INITIALIZERS:
+        raise ValueError(f"Unknown initializer: {name}")
+    return _INITIALIZERS[name]
