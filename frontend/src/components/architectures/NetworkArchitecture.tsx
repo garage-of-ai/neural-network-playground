@@ -1,19 +1,29 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Controls, ReactFlow, type Node, type NodeTypes, type EdgeTypes, type OnMoveStart, type ReactFlowInstance } from '@xyflow/react'
+import { ReactFlow, type Node, type NodeTypes, type EdgeTypes, type OnMoveStart, type ReactFlowInstance } from '@xyflow/react'
 import '@xyflow/react/dist/base.css'
 import { useNetwork } from '../../context/NetworkContext'
 import { useTraining } from '../../context/TrainingContext'
-import { computeLayerPositions, stageSize } from './layoutMath'
+import { computeLayerPositions } from './layoutMath'
 import { useNetworkFlowGraph, type ActiveNeuron } from './useNetworkFlowGraph'
 import NeuronNode from './nodes/NeuronNode'
 import EllipsisNode from './nodes/EllipsisNode'
 import WeightEdge from './edges/WeightEdge'
 import NetworkPulse from './NetworkPulse'
 import LayerLabelBar from './LayerLabelBar'
+import NetworkControls from './NetworkControls'
 import './NetworkArchitecture.css'
 
 const nodeTypes: NodeTypes = { neuron: NeuronNode, ellipsis: EllipsisNode }
 const edgeTypes: EdgeTypes = { weight: WeightEdge }
+
+const MIN_ZOOM = 0.4
+const MAX_ZOOM = 2
+
+// chừa padding đáy đủ lớn để nội dung không bị layer-label-bar che — bắt
+// buộc phải ghi kèm đơn vị "px", nếu truyền số trần React Flow sẽ hiểu là
+// hệ số tỉ lệ (viewport - viewport/(1+padding)) chứ không phải pixel, khiến
+// padding "32" nuốt gần hết khung nhìn và ép zoom kẹp xuống minZoom
+const FIT_PADDING = { top: '32px', right: '32px', bottom: '88px', left: '32px' } as const
 
 function NetworkArchitecture() {
     const { architecture, weights } = useNetwork()
@@ -66,28 +76,26 @@ function NetworkArchitecture() {
     const nodes = useMemo(() => [...liveNodes, ...exitingNodes], [liveNodes, exitingNodes])
     const layout = computeLayerPositions(architecture)
 
-    // căn cho trung trực ngang (đường ngang chia đôi theo chiều cao) của hình
-    // vẽ trùng với trung trực ngang của network-stage — chỉ áp dụng khi người
-    // dùng chưa tự pan, để không đè lên thao tác họ đang làm
-    const centerVertically = useCallback(() => {
-        if (!stageRef.current || !rfInstanceRef.current) return
-        const stageHeight = stageRef.current.clientHeight
-        const contentHeight = stageSize(architecture).height
-        rfInstanceRef.current.setViewport({ x: 0, y: (stageHeight - contentHeight) / 2, zoom: 1 })
-    }, [architecture])
+    // fit toàn bộ đồ thị vào khung nhìn (như bấm nút "fit view") — chỉ áp
+    // dụng khi người dùng chưa tự pan, để không đè lên thao tác họ đang làm.
+    // Gọi qua instance.fitView() trực tiếp (không dùng setViewport thủ công)
+    // nên luôn phản ánh đúng kích thước node đã đo tại thời điểm gọi
+    const fitStage = useCallback(() => {
+        rfInstanceRef.current?.fitView({ padding: FIT_PADDING, duration: 0 })
+    }, [])
 
     useEffect(() => {
-        if (!hasPannedRef.current) centerVertically()
-    }, [centerVertically])
+        if (!hasPannedRef.current) fitStage()
+    }, [fitStage, architecture])
 
     useEffect(() => {
         if (!stageRef.current) return
         const observer = new ResizeObserver(() => {
-            if (!hasPannedRef.current) centerVertically()
+            if (!hasPannedRef.current) fitStage()
         })
         observer.observe(stageRef.current)
         return () => observer.disconnect()
-    }, [centerVertically])
+    }, [fitStage])
 
     const handleMoveStart: OnMoveStart = useCallback((event) => {
         if (event) hasPannedRef.current = true
@@ -107,21 +115,21 @@ function NetworkArchitecture() {
                     zoomOnScroll
                     zoomOnPinch
                     zoomOnDoubleClick={false}
-                    minZoom={0.4}
-                    maxZoom={2}
+                    minZoom={MIN_ZOOM}
+                    maxZoom={MAX_ZOOM}
                     nodesDraggable={false}
                     nodesConnectable={false}
                     elementsSelectable={false}
                     proOptions={{ hideAttribution: true }}
                     onInit={(instance) => {
                         rfInstanceRef.current = instance
-                        centerVertically()
+                        fitStage()
                     }}
                     onMoveStart={handleMoveStart}
                 >
                     <NetworkPulse architecture={architecture} layout={layout} pulseSignal={pulseSignal} />
                     <LayerLabelBar architecture={architecture} />
-                    <Controls showInteractive={false} position="bottom-right" />
+                    <NetworkControls fitPadding={FIT_PADDING} minZoom={MIN_ZOOM} maxZoom={MAX_ZOOM} />
                 </ReactFlow>
             </div>
 

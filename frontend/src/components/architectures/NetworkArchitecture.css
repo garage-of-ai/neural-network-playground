@@ -42,9 +42,12 @@
     display: none;
 }
 
+/* controls (zoom/fit) phải luôn nổi trên cùng và bấm được, kể cả khi mạng
+   lớn tràn ra hay label bar (z-index 10) đè lên phần đồ thị bên dưới */
 .network-stage .react-flow__controls {
     box-shadow: none;
     gap: 6px;
+    z-index: 20;
 }
 
 .network-stage .react-flow__controls-button {
