@@ -42,6 +42,30 @@
     display: none;
 }
 
+.network-stage .react-flow__controls {
+    box-shadow: none;
+    gap: 6px;
+}
+
+.network-stage .react-flow__controls-button {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    background: #fffaf0;
+    box-shadow: 2px 2px 0 var(--ink);
+    color: var(--ink);
+}
+
+.network-stage .react-flow__controls-button:hover {
+    background: #ffe9a8;
+}
+
+.network-stage .react-flow__controls-button:disabled {
+    opacity: 0.4;
+    box-shadow: none;
+}
+
 /* elementsSelectable=false khiến React Flow gắn class "inactive" (pointer-
    events:none) lên mọi edge — ép lại để hover cạnh vẫn hiện tooltip trọng số */
 .network-stage .react-flow__edge.inactive {

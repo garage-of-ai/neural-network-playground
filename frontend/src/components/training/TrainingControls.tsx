@@ -2,22 +2,23 @@ import { useTraining } from '../../context/TrainingContext'
 import './TrainingControls.css'
 
 function TrainingControls() {
-    const { isPlaying, step, runEpoch, togglePlay, reset } = useTraining()
+    const { isPlaying, ready, step, runEpoch, togglePlay, reset } = useTraining()
 
     return (
         <div className="transport">
-            <button className="doodle-btn transport-step" title="Huấn luyện 1 bước" onClick={step}>
+            {!ready && <div className="transport-status">Đang kết nối tới server...</div>}
+            <button className="doodle-btn transport-step" title="Huấn luyện 1 bước" onClick={step} disabled={!ready}>
                 Bước
             </button>
             <div className="transport-row">
-                <button className="doodle-btn" title="Huấn luyện 1 vòng" onClick={runEpoch}>
+                <button className="doodle-btn" title="Huấn luyện 1 vòng" onClick={runEpoch} disabled={!ready}>
                     Vòng
                 </button>
-                <button className="doodle-btn primary" title="Huấn luyện / Tạm dừng" onClick={togglePlay}>
+                <button className="doodle-btn primary" title="Huấn luyện / Tạm dừng" onClick={togglePlay} disabled={!ready}>
                     {isPlaying ? 'Tạm dừng' : 'Chạy'}
                 </button>
             </div>
-            <button className="doodle-btn danger transport-reset" title="Reset" onClick={reset}>
+            <button className="doodle-btn danger transport-reset" title="Reset" onClick={reset} disabled={!ready}>
                 Reset
             </button>
         </div>

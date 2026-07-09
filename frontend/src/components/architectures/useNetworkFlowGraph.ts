@@ -85,7 +85,11 @@ export function useNetworkFlowGraph(
         layout.slice(0, -1).forEach((fromLayer, li) => {
             fromLayer.neurons.forEach(({ unitIndex: i }) => {
                 layout[li + 1].neurons.forEach(({ unitIndex: j }) => {
-                    const w = weights[li][i][j]
+                    // weights có thể tạm thời lệch shape với architecture nếu
+                    // state_update của 1 lần đổi kiến trúc trước còn đang bay
+                    // về trong lúc người dùng đã đổi tiếp — fallback 0 thay vì
+                    // crash, giá trị đúng sẽ tự cập nhật ngay sau đó
+                    const w = weights[li]?.[i]?.[j] ?? 0
                     const isIncomingToActive =
                         activeNeuron !== null && activeNeuron.layerIndex === li + 1 && activeNeuron.unitIndex === j
                     const isDimmed = activeNeuron !== null && !isIncomingToActive

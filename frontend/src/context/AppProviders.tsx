@@ -1,15 +1,18 @@
 import type { ReactNode } from 'react'
+import { SocketProvider } from './SocketContext'
 import { DatasetProvider } from './DatasetContext'
 import { NetworkProvider } from './NetworkContext'
 import { TrainingProvider } from './TrainingContext'
 
 function AppProviders({ children }: { children: ReactNode }) {
     return (
-        <DatasetProvider>
-            <NetworkProvider>
-                <TrainingProvider>{children}</TrainingProvider>
-            </NetworkProvider>
-        </DatasetProvider>
+        <SocketProvider>
+            <DatasetProvider>
+                <NetworkProvider>
+                    <TrainingProvider>{children}</TrainingProvider>
+                </NetworkProvider>
+            </DatasetProvider>
+        </SocketProvider>
     )
 }
 

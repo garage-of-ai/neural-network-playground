@@ -13,7 +13,10 @@ interface LayerLabelBarProps {
 // ở lớp trên cùng (z-index cao) với nền phủ bán trong suốt, để khi mạng lớn
 // tràn xuống đáy thì phần bị che là neuron/edge chứ không phải label
 function LayerLabelBar({ architecture }: LayerLabelBarProps) {
-    const { x } = useViewport()
+    // x/y của viewport là toạ độ màn hình (px), nhưng COL_WIDTH là đơn vị
+    // trong không gian đồ thị (flow-space) — phải nhân zoom mới ra đúng vị trí
+    // px trên màn hình, nếu không label sẽ lệch cột ngay khi người dùng zoom
+    const { x, zoom } = useViewport()
 
     return (
         <div className="layer-label-bar">
@@ -26,7 +29,7 @@ function LayerLabelBar({ architecture }: LayerLabelBarProps) {
                         exit={{ scale: 0.25, opacity: 0 }}
                         transition={{ type: 'spring', stiffness: 420, damping: 18 }}
                         className="layer-label"
-                        style={{ left: x + li * COL_WIDTH, width: COL_WIDTH }}
+                        style={{ left: x + li * COL_WIDTH * zoom, width: COL_WIDTH * zoom }}
                     >
                         <b>{layer.label}</b>
                         {layer.activation && <div className="activation-tag">{layer.activation}</div>}

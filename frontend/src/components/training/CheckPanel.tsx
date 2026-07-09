@@ -1,7 +1,14 @@
 import { useEffect, useRef } from 'react'
 import { useTraining } from '../../context/TrainingContext'
+import { useNetwork, type PredictionGrid } from '../../context/NetworkContext'
 import { useDataset } from '../../context/DatasetContext'
+import type { DatasetPoint } from '../../types'
 import './CheckPanel.css'
+
+// khoảng toạ độ thật mà backend dùng để sinh dataset và prediction_grid (xem
+// training_session.py: GRID_RANGE=6) — phải khớp đúng con số này thì điểm dữ
+// liệu mới rơi đúng vị trí trên nền decision boundary, không bị lệch
+const DATA_SPACE_RANGE = 6
 
 function drawSparkline(canvas: HTMLCanvasElement, data: number[], color: string) {
     const ctx = canvas.getContext('2d')
@@ -30,35 +37,76 @@ function drawSparkline(canvas: HTMLCanvasElement, data: number[], color: string)
     ctx.fill()
 }
 
-// TODO(backend): decision boundary hiện là sóng giả lập theo epoch/dataset
-// (giữ tinh thần mockups/draft-2), chưa phản ánh trọng số mạng thật
-function drawBoundary(canvas: HTMLCanvasElement, datasetKind: string, epoch: number) {
+// Màu khớp với 3 màu dùng ở DatasetPreview (COLOR_A/B/C) để nhất quán trong toàn app
+const CLASS_COLORS: [number, number, number][] = [
+    [229, 83, 75], // đỏ  — class 0
+    [63, 185, 80], // xanh lá — class 1
+    [63, 142, 224], // xanh dương — class 2
+]
+
+const BOUNDARY_LINE_COLOR: [number, number, number] = [46, 42, 38] // var(--ink)
+const BOUNDARY_PROBE_PX = 2 // khoảng cách (px) dò 2 ô lân cận để phát hiện chỗ đổi lớp/vượt ngưỡng
+
+function sampleGrid(grid: number[][], resolution: number, w: number, h: number, x: number, y: number): number {
+    const gx = Math.min(resolution - 1, Math.max(0, Math.floor((x / w) * resolution)))
+    const gy = Math.min(resolution - 1, Math.max(0, Math.floor((y / h) * resolution)))
+    return grid[gy][gx]
+}
+
+// vẽ decision boundary thật từ prediction_grid server trả về (xem PLAN.API.md
+// mục 1.10). isMultiClass=true (output softmax) -> grid chứa index lớp (0,1,2..),
+// tô màu rời rạc theo class; false (sigmoid) -> grid chứa xác suất [0,1], nội
+// suy màu liên tục giữa 2 lớp.
+// Ngoài tô màu, mỗi pixel còn được so với 2 pixel lân cận (phải, dưới): nếu
+// lớp dự đoán đổi (multi-class) hoặc xác suất vượt qua ngưỡng 0.5 theo hướng
+// khác (binary), pixel đó nằm trên đường biên -> tô màu mực đậm thay vì màu
+// nền, tạo thành 1 đường viền rõ giữa các vùng thay vì chỉ có gradient mờ
+function drawBoundary(canvas: HTMLCanvasElement, prediction: PredictionGrid, isMultiClass: boolean) {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
+    const { grid, resolution } = prediction
     const w = canvas.width
     const h = canvas.height
     const img = ctx.createImageData(w, h)
-    const t = epoch * 0.15
+    const [lr, lg, lb] = BOUNDARY_LINE_COLOR
 
     for (let y = 0; y < h; y++) {
         for (let x = 0; x < w; x++) {
-            const nx = (x / w - 0.5) * 4
-            const ny = (y / h - 0.5) * 4
-            let v: number
-            if (datasetKind === 'xor') v = Math.sin(nx * 2 + t) * Math.cos(ny * 2)
-            else if (datasetKind === 'spiral') v = Math.sin(Math.sqrt(nx * nx + ny * ny) * 4 - Math.atan2(ny, nx) * 2 + t)
-            else if (datasetKind === 'moons') v = Math.sin(nx + t) + Math.cos(ny * 1.5)
-            else v = nx * nx + ny * ny - 1.2 + Math.sin(t) * 0.2
-
+            const value = sampleGrid(grid, resolution, w, h, x, y)
             const idx = (y * w + x) * 4
-            if (v > 0) {
-                img.data[idx] = 255 - Math.min(120, v * 80)
-                img.data[idx + 1] = 214
-                img.data[idx + 2] = 214
+
+            const rightX = Math.min(w - 1, x + BOUNDARY_PROBE_PX)
+            const downY = Math.min(h - 1, y + BOUNDARY_PROBE_PX)
+            const valueRight = sampleGrid(grid, resolution, w, h, rightX, y)
+            const valueDown = sampleGrid(grid, resolution, w, h, x, downY)
+
+            let isBoundary: boolean
+            if (isMultiClass) {
+                const cHere = Math.round(value) % CLASS_COLORS.length
+                isBoundary =
+                    Math.round(valueRight) % CLASS_COLORS.length !== cHere ||
+                    Math.round(valueDown) % CLASS_COLORS.length !== cHere
             } else {
-                img.data[idx] = 207
-                img.data[idx + 1] = 232
-                img.data[idx + 2] = 255 - Math.min(60, -v * 40)
+                const hereHigh = value >= 0.5
+                isBoundary = valueRight >= 0.5 !== hereHigh || valueDown >= 0.5 !== hereHigh
+            }
+
+            if (isBoundary) {
+                img.data[idx] = lr
+                img.data[idx + 1] = lg
+                img.data[idx + 2] = lb
+            } else if (isMultiClass) {
+                const [r, g, b] = CLASS_COLORS[Math.round(value) % CLASS_COLORS.length]
+                img.data[idx] = r
+                img.data[idx + 1] = g
+                img.data[idx + 2] = b
+            } else {
+                const t = Math.max(0, Math.min(1, value))
+                const [r0, g0, b0] = CLASS_COLORS[2] // xanh dương ~ xác suất thấp
+                const [r1, g1, b1] = CLASS_COLORS[0] // đỏ ~ xác suất cao
+                img.data[idx] = Math.round(r0 + t * (r1 - r0))
+                img.data[idx + 1] = Math.round(g0 + t * (g1 - g0))
+                img.data[idx + 2] = Math.round(b0 + t * (b1 - b0))
             }
             img.data[idx + 3] = 255
         }
@@ -66,9 +114,56 @@ function drawBoundary(canvas: HTMLCanvasElement, datasetKind: string, epoch: num
     ctx.putImageData(img, 0, 0)
 }
 
+function rgbCss([r, g, b]: [number, number, number]): string {
+    return `rgb(${r}, ${g}, ${b})`
+}
+
+// cùng quy ước màu với drawBoundary ở trên: nhị phân thì label 1 ~ đỏ (xác
+// suất cao), label 0 ~ xanh dương (xác suất thấp); đa lớp thì label là index
+// nên trỏ thẳng vào CLASS_COLORS
+function pointColor(label: number, isMultiClass: boolean): string {
+    if (isMultiClass) return rgbCss(CLASS_COLORS[Math.round(label) % CLASS_COLORS.length])
+    return rgbCss(label > 0.5 ? CLASS_COLORS[0] : CLASS_COLORS[2])
+}
+
+// vẽ đè điểm dữ liệu thật (train đặc, test rỗng viền) lên trên nền decision
+// boundary vừa vẽ bằng putImageData ở trên — PHẢI gọi sau drawBoundary vì
+// putImageData ghi đè toàn bộ canvas, vẽ trước sẽ bị xoá mất
+function drawDatasetPoints(canvas: HTMLCanvasElement, trainPoints: DatasetPoint[], testPoints: DatasetPoint[], isMultiClass: boolean) {
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    const size = canvas.width
+    const toPixel = (v: number) => ((v + DATA_SPACE_RANGE) / (2 * DATA_SPACE_RANGE)) * size
+
+    const drawSet = (points: DatasetPoint[], filled: boolean) => {
+        for (const [x, y, label] of points) {
+            const px = toPixel(x)
+            const py = toPixel(y)
+            const color = pointColor(label, isMultiClass)
+            ctx.beginPath()
+            ctx.arc(px, py, filled ? 3 : 2.5, 0, Math.PI * 2)
+            if (filled) {
+                ctx.fillStyle = color
+                ctx.fill()
+                ctx.strokeStyle = '#2e2a26'
+                ctx.lineWidth = 0.75
+                ctx.stroke()
+            } else {
+                ctx.strokeStyle = color
+                ctx.lineWidth = 1.5
+                ctx.stroke()
+            }
+        }
+    }
+
+    drawSet(testPoints, false)
+    drawSet(trainPoints, true)
+}
+
 function CheckPanel() {
     const { lossHistory, accuracyHistory, epoch } = useTraining()
-    const { config: datasetConfig } = useDataset()
+    const { architecture, predictionGrid } = useNetwork()
+    const { trainPoints, testPoints } = useDataset()
 
     const lossCanvasRef = useRef<HTMLCanvasElement>(null)
     const accCanvasRef = useRef<HTMLCanvasElement>(null)
@@ -83,8 +178,11 @@ function CheckPanel() {
     }, [accuracyHistory])
 
     useEffect(() => {
-        if (boundaryCanvasRef.current) drawBoundary(boundaryCanvasRef.current, datasetConfig.kind, epoch)
-    }, [datasetConfig.kind, epoch])
+        if (!boundaryCanvasRef.current || !predictionGrid) return
+        const isMultiClass = architecture[architecture.length - 1]?.activation === 'softmax'
+        drawBoundary(boundaryCanvasRef.current, predictionGrid, isMultiClass)
+        drawDatasetPoints(boundaryCanvasRef.current, trainPoints, testPoints, isMultiClass)
+    }, [predictionGrid, architecture, trainPoints, testPoints])
 
     const lastLoss = lossHistory[lossHistory.length - 1]
     const lastAcc = accuracyHistory[accuracyHistory.length - 1]

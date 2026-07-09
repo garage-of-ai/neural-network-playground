@@ -1,0 +1,24 @@
+.error-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 22px;
+    padding: 10px 16px;
+    border: 2.5px solid var(--ink);
+    border-radius: var(--radius);
+    background: var(--accent-neg);
+    color: white;
+    box-shadow: var(--shadow);
+    font-size: 14px;
+}
+
+.error-banner-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 4px;
+}

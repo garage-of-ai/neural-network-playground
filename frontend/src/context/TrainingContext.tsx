@@ -1,14 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react'
 import type { TrainingConfig } from '../types'
-import { useNetwork } from './NetworkContext'
-
-const DEFAULT_TRAINING_CONFIG: TrainingConfig = {
-    optimizer: 'adam',
-    learningRate: 0.03,
-    batchSize: 16,
-    epochs: 200,
-    weightInit: 'uniform',
-}
+import { useSocket } from './SocketContext'
+import { DEFAULT_TRAINING_CONFIG } from './defaults'
 
 const INITIAL_LOSS = 0.69
 const INITIAL_ACCURACY = 0.5
@@ -23,6 +16,8 @@ interface TrainingContextValue {
     accuracyHistory: number[]
     isPlaying: boolean
     pulseSignal: number
+    /** session_init đã được server xử lý xong, an toàn để gửi step/run_epoch/reset */
+    ready: boolean
     step: () => void
     runEpoch: () => void
     togglePlay: () => void
@@ -31,13 +26,9 @@ interface TrainingContextValue {
 
 const TrainingContext = createContext<TrainingContextValue | null>(null)
 
-// TODO(backend): step()/runEpoch() hiện đang giả lập loss/accuracy bằng số ngẫu
-// nhiên (giữ tinh thần mockups/draft-2/main.js) để UI chạy được ngay. Khi có
-// backend huấn luyện thật qua websocket, chỉ cần thay nội dung 2 hàm này,
-// các component tiêu thụ context (TrainingControls, CheckPanel...) không cần đổi.
 export function TrainingProvider({ children }: { children: ReactNode }) {
-    const { jitterWeights, resetWeights } = useNetwork()
-    const [config, setConfig] = useState<TrainingConfig>(DEFAULT_TRAINING_CONFIG)
+    const { sendMessage, subscribe, ready } = useSocket()
+    const [config, setConfigState] = useState<TrainingConfig>(DEFAULT_TRAINING_CONFIG)
     const [epoch, setEpoch] = useState(0)
     const [lossHistory, setLossHistory] = useState<number[]>([INITIAL_LOSS])
     const [accuracyHistory, setAccuracyHistory] = useState<number[]>([INITIAL_ACCURACY])
@@ -45,34 +36,36 @@ export function TrainingProvider({ children }: { children: ReactNode }) {
     const [pulseSignal, setPulseSignal] = useState(0)
     const intervalRef = useRef<number | null>(null)
 
-    const step = () => {
-        setEpoch((e) => e + 1)
-        setPulseSignal((n) => n + 1)
-        setLossHistory((prev) => {
-            const value = Math.max(0.02, prev[prev.length - 1] * (0.9 + Math.random() * 0.08))
-            const next = [...prev, value]
-            return next.length > HISTORY_LIMIT ? next.slice(1) : next
+    // toàn bộ epoch/loss/accuracy/weights giờ do server tính, context này chỉ
+    // là nơi lưu lại state_update mới nhất để component vẽ lại (xem PLAN.API.md 1.8)
+    useEffect(() => {
+        const unsub = subscribe('state_update', (msg) => {
+            setEpoch(msg.epoch)
+            setPulseSignal((n) => n + 1)
+            setLossHistory((prev) => {
+                const next = msg.weightsReset ? [msg.loss] : [...prev, msg.loss]
+                return next.length > HISTORY_LIMIT ? next.slice(next.length - HISTORY_LIMIT) : next
+            })
+            setAccuracyHistory((prev) => {
+                const next = msg.weightsReset ? [msg.accuracy] : [...prev, msg.accuracy]
+                return next.length > HISTORY_LIMIT ? next.slice(next.length - HISTORY_LIMIT) : next
+            })
         })
-        setAccuracyHistory((prev) => {
-            const value = Math.min(0.99, prev[prev.length - 1] + Math.random() * 0.03)
-            const next = [...prev, value]
-            return next.length > HISTORY_LIMIT ? next.slice(1) : next
-        })
-        jitterWeights()
+        return unsub
+    }, [subscribe])
+
+    const setConfig = (next: TrainingConfig) => {
+        setConfigState(next)
+        sendMessage({ type: 'update_training_config', trainingConfig: next })
     }
 
-    const runEpoch = () => {
-        for (let i = 0; i < 5; i++) step()
-    }
-
+    const step = () => sendMessage({ type: 'step' })
+    const runEpoch = () => sendMessage({ type: 'run_epoch' })
     const togglePlay = () => setIsPlaying((p) => !p)
 
     const reset = () => {
         setIsPlaying(false)
-        setEpoch(0)
-        setLossHistory([INITIAL_LOSS])
-        setAccuracyHistory([INITIAL_ACCURACY])
-        resetWeights()
+        sendMessage({ type: 'reset' })
     }
 
     useEffect(() => {
@@ -81,15 +74,15 @@ export function TrainingProvider({ children }: { children: ReactNode }) {
         return () => {
             if (intervalRef.current !== null) window.clearInterval(intervalRef.current)
         }
-        // step() cố ý không nằm trong deps: nó luôn đọc state mới nhất qua các
-        // setter dạng functional update, nên không bị "stale" dù effect chỉ
-        // chạy lại khi isPlaying đổi
+        // step() cố ý không nằm trong deps: nó chỉ gửi 1 WS message không phụ
+        // thuộc state cục bộ nào, nên không có nguy cơ "stale" khi effect chỉ
+        // chạy lại lúc isPlaying đổi
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isPlaying])
 
     return (
         <TrainingContext.Provider
-            value={{ config, setConfig, epoch, lossHistory, accuracyHistory, isPlaying, pulseSignal, step, runEpoch, togglePlay, reset }}
+            value={{ config, setConfig, epoch, lossHistory, accuracyHistory, isPlaying, pulseSignal, ready, step, runEpoch, togglePlay, reset }}
         >
             {children}
         </TrainingContext.Provider>

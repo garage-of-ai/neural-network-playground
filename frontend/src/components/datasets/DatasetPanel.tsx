@@ -7,7 +7,7 @@ import './DatasetPanel.css'
 const DATASETS: DatasetKind[] = ['circle', 'xor', 'gauss', 'spiral', 'moons', 'blobs3']
 
 function DatasetPanel() {
-    const { config, setKind, setTrainSplit, setNoise } = useDataset()
+    const { config, ready, setKind, setTrainSplit, setNoise } = useDataset()
 
     // index carousel đang lướt tới, KHÁC với config.kind (dataset đã thực sự áp
     // dụng) — người dùng phải bấm "Chọn dataset này" mới apply xuống config thật
@@ -46,7 +46,7 @@ function DatasetPanel() {
                     </svg>
                 </button>
             </div>
-            <button className="doodle-btn primary dataset-confirm" onClick={() => setKind(previewKind)}>
+            <button className="doodle-btn primary dataset-confirm" onClick={() => setKind(previewKind)} disabled={!ready}>
                 Chọn dataset này
             </button>
 
@@ -61,6 +61,7 @@ function DatasetPanel() {
                     max={95}
                     value={config.trainSplit}
                     onChange={(e) => setTrainSplit(Number(e.target.value))}
+                    disabled={!ready}
                 />
             </div>
 
@@ -75,6 +76,7 @@ function DatasetPanel() {
                     max={50}
                     value={config.noise}
                     onChange={(e) => setNoise(Number(e.target.value))}
+                    disabled={!ready}
                 />
             </div>
         </div>

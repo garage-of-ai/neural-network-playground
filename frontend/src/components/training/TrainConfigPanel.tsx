@@ -4,10 +4,19 @@ import type { Optimizer, WeightInit } from '../../types'
 import './TrainConfigPanel.css'
 
 function TrainConfigPanel() {
-    const { config, setConfig } = useTraining()
+    const { config, ready, setConfig } = useTraining()
     const [collapsed, setCollapsed] = useState(false)
 
     const toggleCollapsed = () => setCollapsed((c) => !c)
+
+    // input số cho phép xoá trắng khi gõ (Number('') === 0) — chỉ đẩy lên
+    // server khi giá trị hợp lệ, tránh round-trip vô nghĩa luôn bị backend từ
+    // chối (schema yêu cầu > 0) và hiện banner lỗi mỗi lần người dùng xoá ô
+    const setPositiveNumberField = (field: 'learningRate' | 'batchSize' | 'epochs', raw: string) => {
+        const value = Number(raw)
+        if (!Number.isFinite(value) || value <= 0) return
+        setConfig({ ...config, [field]: value })
+    }
 
     return (
         <div className={`panel collapsible-panel${collapsed ? ' collapsed' : ''}`}>
@@ -35,6 +44,7 @@ function TrainConfigPanel() {
                         <select
                             value={config.optimizer}
                             onChange={(e) => setConfig({ ...config, optimizer: e.target.value as Optimizer })}
+                            disabled={!ready}
                         >
                             <option value="sgd">SGD</option>
                             <option value="sgd-momentum">SGD + Momentum</option>
@@ -50,7 +60,8 @@ function TrainConfigPanel() {
                             step={0.01}
                             min={0.001}
                             value={config.learningRate}
-                            onChange={(e) => setConfig({ ...config, learningRate: Number(e.target.value) })}
+                            onChange={(e) => setPositiveNumberField('learningRate', e.target.value)}
+                            disabled={!ready}
                         />
                     </div>
 
@@ -61,7 +72,8 @@ function TrainConfigPanel() {
                             type="number"
                             min={1}
                             value={config.batchSize}
-                            onChange={(e) => setConfig({ ...config, batchSize: Number(e.target.value) })}
+                            onChange={(e) => setPositiveNumberField('batchSize', e.target.value)}
+                            disabled={!ready}
                         />
                     </div>
 
@@ -72,7 +84,8 @@ function TrainConfigPanel() {
                             type="number"
                             min={1}
                             value={config.epochs}
-                            onChange={(e) => setConfig({ ...config, epochs: Number(e.target.value) })}
+                            onChange={(e) => setPositiveNumberField('epochs', e.target.value)}
+                            disabled={!ready}
                         />
                     </div>
 
@@ -81,6 +94,7 @@ function TrainConfigPanel() {
                         <select
                             value={config.weightInit}
                             onChange={(e) => setConfig({ ...config, weightInit: e.target.value as WeightInit })}
+                            disabled={!ready}
                         >
                             <option value="zeros">Zeros</option>
                             <option value="uniform">Uniform ngẫu nhiên</option>

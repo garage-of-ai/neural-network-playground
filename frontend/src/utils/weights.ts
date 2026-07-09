@@ -17,9 +17,3 @@ export function createRandomWeights(architecture: LayerConfig[]): NetworkWeights
     }
     return weights
 }
-
-export function jitterWeights(weights: NetworkWeights): NetworkWeights {
-    return weights.map((layer) =>
-        layer.map((row) => row.map((w) => Math.max(-1, Math.min(1, w + (Math.random() - 0.5) * 0.3)))),
-    )
-}

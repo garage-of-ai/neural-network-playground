@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ReactFlow, type Node, type NodeTypes, type EdgeTypes, type OnMoveStart, type ReactFlowInstance } from '@xyflow/react'
+import { Controls, ReactFlow, type Node, type NodeTypes, type EdgeTypes, type OnMoveStart, type ReactFlowInstance } from '@xyflow/react'
 import '@xyflow/react/dist/base.css'
 import { useNetwork } from '../../context/NetworkContext'
 import { useTraining } from '../../context/TrainingContext'
@@ -104,11 +104,11 @@ function NetworkArchitecture() {
                     nodeTypes={nodeTypes}
                     edgeTypes={edgeTypes}
                     panOnDrag
-                    zoomOnScroll={false}
-                    zoomOnPinch={false}
+                    zoomOnScroll
+                    zoomOnPinch
                     zoomOnDoubleClick={false}
-                    minZoom={1}
-                    maxZoom={1}
+                    minZoom={0.4}
+                    maxZoom={2}
                     nodesDraggable={false}
                     nodesConnectable={false}
                     elementsSelectable={false}
@@ -121,6 +121,7 @@ function NetworkArchitecture() {
                 >
                     <NetworkPulse architecture={architecture} layout={layout} pulseSignal={pulseSignal} />
                     <LayerLabelBar architecture={architecture} />
+                    <Controls showInteractive={false} position="bottom-right" />
                 </ReactFlow>
             </div>
 

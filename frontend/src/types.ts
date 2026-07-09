@@ -30,3 +30,46 @@ export interface TrainingConfig {
     epochs: number
     weightInit: WeightInit
 }
+
+/** Điểm dữ liệu dạng [x, y, label] đúng shape backend trả về qua dataset_points */
+export type DatasetPoint = [number, number, number]
+
+/** Message client -> server qua WS /ws/training, xem PLAN.API.md */
+export type ClientMessage =
+    | { type: 'session_init'; architecture: LayerConfig[]; trainingConfig: TrainingConfig; datasetConfig: DatasetConfig }
+    | { type: 'update_architecture'; architecture: LayerConfig[] }
+    | { type: 'update_dataset'; datasetConfig: DatasetConfig }
+    | { type: 'update_training_config'; trainingConfig: TrainingConfig }
+    | { type: 'step' }
+    | { type: 'run_epoch' }
+    | { type: 'reset' }
+
+export interface StateUpdateMessage {
+    type: 'state_update'
+    epoch: number
+    weights: NetworkWeights
+    loss: number
+    accuracy: number
+    weightsReset: boolean
+}
+
+export interface DatasetPointsMessage {
+    type: 'dataset_points'
+    train: DatasetPoint[]
+    test: DatasetPoint[]
+}
+
+export interface PredictionGridMessage {
+    type: 'prediction_grid'
+    resolution: number
+    grid: number[][]
+}
+
+export interface ErrorMessage {
+    type: 'error'
+    message: string
+    code: string
+}
+
+/** Message server -> client qua WS /ws/training */
+export type ServerMessage = StateUpdateMessage | DatasetPointsMessage | PredictionGridMessage | ErrorMessage

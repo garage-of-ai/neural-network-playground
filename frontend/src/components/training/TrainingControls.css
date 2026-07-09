@@ -33,3 +33,9 @@
     height: 32px;
     font-size: 14px;
 }
+
+.transport-status {
+    font-size: 12px;
+    color: var(--accent-zero);
+    text-align: center;
+}

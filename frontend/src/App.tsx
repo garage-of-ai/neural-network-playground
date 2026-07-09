@@ -3,6 +3,7 @@ import AppProviders from './context/AppProviders'
 import AbstractArchitecture from './components/architectures/AbstractArchitecture'
 import CheckPanel from './components/training/CheckPanel'
 import DatasetPanel from './components/datasets/DatasetPanel'
+import ErrorBanner from './components/layouts/ErrorBanner'
 import Footer from './components/layouts/Footer'
 import Header from './components/layouts/Header'
 import NetworkArchitecture from './components/architectures/NetworkArchitecture'
@@ -14,6 +15,7 @@ function App() {
         <AppProviders>
             <div id="netlab">
                 <Header />
+                <ErrorBanner />
                 <div className="content">
                     <div className="col left">
                         <DatasetPanel />
