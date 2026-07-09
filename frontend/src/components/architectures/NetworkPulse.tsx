@@ -34,14 +34,19 @@ interface NetworkPulseProps {
 function NetworkPulse({ architecture, layout, pulseSignal }: NetworkPulseProps) {
     const [squares, setSquares] = useState<Square[]>([])
     const timeouts = useRef<number[]>([])
-    const isFirstRender = useRef(true)
+    // so sánh giá trị pulseSignal trước/sau thay vì cờ boolean "đã chạy lần
+    // đầu chưa" — cờ boolean bị StrictMode (dev) phá: mount effect luôn được
+    // gọi 2 lần (gọi → cleanup giả lập → gọi lại) để bắt lỗi thiếu cleanup,
+    // lượt đầu lật cờ xong return sớm (không đăng ký cleanup), lượt 2 thấy cờ
+    // đã false nên lọt qua và bắn pulse thật dù pulseSignal chưa hề đổi. So
+    // sánh giá trị thì an toàn: cả 2 lượt gọi mount đều mang cùng giá trị
+    // pulseSignal nên đều bị nhận đúng là "chưa đổi thật"
+    const prevPulseSignalRef = useRef(pulseSignal)
 
     useEffect(() => {
-        // bỏ qua lần mount đầu tiên — pulseSignal bắt đầu ở 0, không phải 1 step thật
-        if (isFirstRender.current) {
-            isFirstRender.current = false
-            return
-        }
+        const isRealChange = prevPulseSignalRef.current !== pulseSignal
+        prevPulseSignalRef.current = pulseSignal
+        if (!isRealChange) return
         if (layout.length === 0 || layout[0].neurons.length === 0) return
 
         const spawn = (from: { x: number; y: number }, to: { x: number; y: number }, durationMs: number) => {

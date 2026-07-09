@@ -41,7 +41,11 @@ export function TrainingProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const unsub = subscribe('state_update', (msg) => {
             setEpoch(msg.epoch)
-            setPulseSignal((n) => n + 1)
+            // animation "batch bay qua mạng" chỉ nên chạy khi có 1 bước huấn
+            // luyện thật (step/run_epoch) — các state_update khác (session_init,
+            // reset, đổi kiến trúc, đổi khởi tạo trọng số) đều đánh dấu
+            // weightsReset=true vì chỉ đổi trọng số chứ không có batch nào chạy
+            if (!msg.weightsReset) setPulseSignal((n) => n + 1)
             setLossHistory((prev) => {
                 const next = msg.weightsReset ? [msg.loss] : [...prev, msg.loss]
                 return next.length > HISTORY_LIMIT ? next.slice(next.length - HISTORY_LIMIT) : next

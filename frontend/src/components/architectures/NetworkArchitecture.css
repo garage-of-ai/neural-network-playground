@@ -88,11 +88,12 @@
     fill: none;
     stroke-opacity: 0.75;
     stroke-linecap: round;
-    cursor: pointer;
+    /* hover/tooltip do .edge-hit bên dưới đảm nhiệm — path này chỉ để vẽ,
+       không tự bắt sự kiện, tránh "nuốt" hover ngay tại lõi nét mảnh */
+    pointer-events: none;
     transition: stroke-opacity 0.15s, filter 0.15s;
 }
 
-.edge:hover,
 .edge--hot {
     stroke-opacity: 1;
     filter: drop-shadow(0 0 3px rgba(46, 42, 38, 0.45));
@@ -100,6 +101,15 @@
 
 .edge--dim {
     stroke-opacity: 0.08;
+}
+
+/* vùng bắt hover trong suốt, rộng cố định (không tỉ lệ theo |weight| như
+   .edge) — cạnh trọng số nhỏ vẫn dễ trỏ chuột mà độ dày hiển thị không đổi */
+.edge-hit {
+    fill: none;
+    stroke: transparent;
+    cursor: pointer;
+    pointer-events: stroke;
 }
 
 .edge-tooltip {
