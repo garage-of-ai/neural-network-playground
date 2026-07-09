@@ -3,7 +3,15 @@ from core.network import MLP
 from core.optimizers import get_optimizer
 
 def build_network(architecture: list, weight_init: str):
-    pass
+    layers = []
+    for prev_layer, layer in zip(architecture, architecture[1:]):
+        layers.append(DenseLayer(
+            input_size=prev_layer.units,
+            output_size=layer.units,
+            activation=layer.activation,
+            weight_init=weight_init,
+        ))
+    return MLP(layers)
 
 def build_optimizer(optimizer_name: str, lr: float):
-    pass
+    return get_optimizer(optimizer_name, lr)
