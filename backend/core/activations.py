@@ -3,31 +3,34 @@ import numpy as np
 ### Hàm activation và đạo hàm ###
 
 def relu(z):
-    pass
+    return np.maximum(0, z)
 
 def relu_derivative(z):
-    pass
+    return (z > 0).astype(z.dtype)
 
 def sigmoid(z):
-    pass
+    return np.where(z >= 0, 1 / (1 + np.exp(-z)), np.exp(z) / (1 + np.exp(z)))
 
 def sigmoid_derivative(z):
-    pass
+    s = sigmoid(z)
+    return s * (1 - s)
 
 def tanh(z):
-    pass
+    return np.tanh(z)
 
 def tanh_derivative(z):
-    pass
+    return 1 - np.tanh(z) ** 2
 
 def linear(z):
-    pass
+    return z
 
 def linear_derivative(z):
-    pass
+    return np.ones_like(z)
 
 def softmax(z):
-    pass
+    shifted = z - np.max(z, axis=-1, keepdims=True)
+    exp = np.exp(shifted)
+    return exp / np.sum(exp, axis=-1, keepdims=True)
 
 
 ### Registry ###
@@ -41,4 +44,6 @@ _ACTIVATIONS = {
 }
 
 def get_activation(name: str):
-    pass
+    if name not in _ACTIVATIONS:
+        raise ValueError(f"Unknown activation: {name}")
+    return _ACTIVATIONS[name]
