@@ -18,10 +18,15 @@ class DenseLayer:
         self._z_cache = None
 
     def forward(self, x):
-        pass
+        self._input_cache = x
+        self._z_cache = x @ self.W + self.b
+        return self.activation_fn(self._z_cache)
 
     def backward(self, dz):
-        pass
+        dW = self._input_cache.T @ dz
+        db = np.sum(dz, axis=0)
+        dx = dz @ self.W.T
+        return dW, db, dx
 
     def apply_grad(self, dW, db, update_fn):
-        pass
+        self.W, self.b = update_fn(self.W, self.b, dW, db)

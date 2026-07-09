@@ -4,7 +4,7 @@ from core.optimizers import SGD, SGDMomentum, Adam, get_optimizer
 
 
 def test_sgd_moves_weight_in_negative_gradient_direction():
-    optimizer = SGD(learning_rate=0.1)
+    optimizer = SGD(lr=0.1)
     update_fn = optimizer.get_update_fn_for_layer(0)
 
     W = np.array([[1.0, 2.0]])
@@ -18,7 +18,7 @@ def test_sgd_moves_weight_in_negative_gradient_direction():
 
 
 def test_sgd_momentum_accumulates_velocity():
-    optimizer = SGDMomentum(learning_rate=0.1, momentum=0.9)
+    optimizer = SGDMomentum(lr=0.1, momentum=0.9)
     update_fn = optimizer.get_update_fn_for_layer(0)
 
     W = np.array([[1.0]])
@@ -37,7 +37,7 @@ def test_sgd_momentum_accumulates_velocity():
 
 
 def test_adam_first_step_matches_manual_bias_correction():
-    optimizer = Adam(learning_rate=0.1, beta1=0.9, beta2=0.999, eps=1e-8)
+    optimizer = Adam(lr=0.1, beta1=0.9, beta2=0.999, eps=1e-8)
     update_fn = optimizer.get_update_fn_for_layer(0)
 
     W = np.array([[1.0]])
@@ -57,7 +57,7 @@ def test_adam_first_step_matches_manual_bias_correction():
 
 
 def test_different_layers_have_independent_state():
-    optimizer = SGDMomentum(learning_rate=0.1, momentum=0.9)
+    optimizer = SGDMomentum(lr=0.1, momentum=0.9)
     update_fn_layer0 = optimizer.get_update_fn_for_layer(0)
     update_fn_layer1 = optimizer.get_update_fn_for_layer(1)
 
