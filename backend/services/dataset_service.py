@@ -14,3 +14,5 @@ class DatasetBundle:
 def build_dataset(dataset_config):
     pass
 
+def list_available_kinds() -> list[dict]:
+    pass
