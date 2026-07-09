@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Literal, Union
-from network import LayerSpec
-from training import TrainingConfigSchema, DatasetConfigSchema
+from .network import LayerSpec
+from .training import TrainingConfigSchema, DatasetConfigSchema
 
 ### Client -> Server ###
 

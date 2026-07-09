@@ -1,6 +1,6 @@
 import numpy as np
-from activations import get_activation
-from initializers import get_initializer
+from .activations import get_activation
+from .initializers import get_initializer
 
 class DenseLayer:
     def __init__(self, input_size, output_size, activation, weight_init):

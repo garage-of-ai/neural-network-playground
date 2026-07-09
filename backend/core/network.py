@@ -1,6 +1,6 @@
 import numpy as np
-from layers import DenseLayer
-import losses
+from .layers import DenseLayer
+from . import losses
 
 class MLP:
     def __init__(self, layers: list[DenseLayer]):

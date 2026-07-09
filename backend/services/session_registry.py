@@ -1,4 +1,4 @@
-from training_session import TrainingSession
+from .training_session import TrainingSession
 
 _sessions: dict[str, TrainingSession] = {}
 

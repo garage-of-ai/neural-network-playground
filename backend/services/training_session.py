@@ -1,6 +1,6 @@
 import numpy as np
-from network_factory import build_network, build_optimizer
-from dataset_service import build_dataset
+from .network_factory import build_network, build_optimizer
+from .dataset_service import build_dataset
 
 RESOLUTION = 40
 
