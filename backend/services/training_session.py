@@ -91,6 +91,9 @@ class TrainingSession:
     def get_weights(self):
         return [layer.W.tolist() for layer in self.network.layers]
 
+    def get_metrics(self):
+        return self._compute_metrics()
+
     def _next_batch(self):
         X, y = self.dataset.X_train, self.dataset.y_train
         batch_size = self.training_config.batchSize
