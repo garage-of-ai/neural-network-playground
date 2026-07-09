@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.ws_training import router as ws_router
 from api.health_check import router as health_router
 
-app = FastAPI(title="NetLab API")
+app = FastAPI(title="NetLab API", version="1.0")
 
 app.add_middleware(
     CORSMiddleware,
