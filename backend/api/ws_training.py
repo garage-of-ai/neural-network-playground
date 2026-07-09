@@ -87,7 +87,10 @@ async def _dispatch(connection_id: str, message, websocket: WebSocket):
         await websocket.send_json(_build_prediction_grid(session).model_dump())
 
     elif isinstance(message, UpdateTrainingConfigMessage):
-        session.update_training_config(message.trainingConfig)
+        weights_changed = session.update_training_config(message.trainingConfig)
+        if weights_changed:
+            await websocket.send_json(_build_state_update(session, weights_reset=True).model_dump())
+            await websocket.send_json(_build_prediction_grid(session).model_dump())
 
     elif isinstance(message, StepMessage):
         session.step()

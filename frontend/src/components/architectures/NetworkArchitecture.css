@@ -217,11 +217,23 @@
 
 .legend {
     display: flex;
-    gap: 14px;
     align-items: center;
     font-size: 12px;
     margin-top: 8px;
     flex-wrap: wrap;
+    gap: 10px;
+}
+
+.legend-dots {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+/* đẩy khối chú thích màu (trái) và khối chọn khởi tạo trọng số (phải) ra
+   hai đầu .legend, dùng cùng hàng với network-stage bên trên */
+.legend-spacer {
+    flex: 1;
 }
 
 .legend .dot {
@@ -243,4 +255,53 @@
 
 .dot--neg {
     background: var(--accent-neg);
+}
+
+.weight-init {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.weight-init__label {
+    font-weight: 700;
+}
+
+/* các pill dính liền nhau thành một khối bo góc ngoài, viền chung — cùng
+   phong cách doodle (viền đen 2px) với .neuron / .react-flow__controls-button */
+.weight-init__group {
+    display: flex;
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.weight-init__pill {
+    font-family: inherit;
+    font-size: 12px;
+    padding: 3px 10px;
+    border: none;
+    border-right: 2px solid var(--ink);
+    background: #fffaf0;
+    color: var(--ink);
+    cursor: pointer;
+}
+
+.weight-init__pill:last-child {
+    border-right: none;
+}
+
+.weight-init__pill:hover:not(:disabled) {
+    background: #ffe9a8;
+}
+
+.weight-init__pill--active {
+    background: var(--ink);
+    color: #fffaf0;
+    font-weight: 700;
+}
+
+.weight-init__pill:disabled {
+    opacity: 0.4;
+    cursor: default;
 }

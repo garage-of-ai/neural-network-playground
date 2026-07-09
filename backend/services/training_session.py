@@ -35,17 +35,31 @@ class TrainingSession:
         self._batch_cursor = 0
 
     def update_training_config(self, training_config):
+        weight_init_changed = (
+            self.training_config is not None
+            and training_config.weightInit != self.training_config.weightInit
+        )
         needs_new_optimizer = (
             self.training_config is None
             or training_config.optimizer != self.training_config.optimizer
             or training_config.learningRate != self.training_config.learningRate
         )
         self.training_config = training_config
+
+        # đổi cách khởi tạo trọng số chỉ áp dụng ngay khi mạng chưa chạy bước
+        # nào kể từ lần reset gần nhất — nếu đang huấn luyện dở, giá trị mới
+        # chỉ được lưu lại, đợi tới lần reset kế tiếp mới thực sự áp dụng
+        is_untrained = self.epoch == 0 and self._batch_cursor == 0
+        if weight_init_changed and is_untrained:
+            self._rebuild_network_and_optimizer()
+            return True
+
         if needs_new_optimizer:
             self.optimizer = build_optimizer(training_config.optimizer, training_config.learningRate)
             self._update_fns = [
                 self.optimizer.get_update_fn_for_layer(i) for i in range(len(self.network.layers))
             ]
+        return False
 
     def step(self):
         X_batch, y_batch_raw, epoch_done = self._next_batch()

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTraining } from '../../context/TrainingContext'
-import type { Optimizer, WeightInit } from '../../types'
+import type { Optimizer } from '../../types'
 import './TrainConfigPanel.css'
 
 function TrainConfigPanel() {
@@ -87,19 +87,6 @@ function TrainConfigPanel() {
                             onChange={(e) => setPositiveNumberField('epochs', e.target.value)}
                             disabled={!ready}
                         />
-                    </div>
-
-                    <div className="field-row">
-                        <span>Khởi tạo trọng số</span>
-                        <select
-                            value={config.weightInit}
-                            onChange={(e) => setConfig({ ...config, weightInit: e.target.value as WeightInit })}
-                            disabled={!ready}
-                        >
-                            <option value="zeros">Zeros</option>
-                            <option value="uniform">Uniform ngẫu nhiên</option>
-                            <option value="gaussian">Gauss chuẩn</option>
-                        </select>
                     </div>
                 </div>
             </div>

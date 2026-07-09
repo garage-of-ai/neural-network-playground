@@ -3,6 +3,7 @@ import { ReactFlow, type Node, type NodeTypes, type EdgeTypes, type OnMoveStart,
 import '@xyflow/react/dist/base.css'
 import { useNetwork } from '../../context/NetworkContext'
 import { useTraining } from '../../context/TrainingContext'
+import type { WeightInit } from '../../types'
 import { computeLayerPositions } from './layoutMath'
 import { useNetworkFlowGraph, type ActiveNeuron } from './useNetworkFlowGraph'
 import NeuronNode from './nodes/NeuronNode'
@@ -25,9 +26,20 @@ const MAX_ZOOM = 2
 // padding "32" nuốt gần hết khung nhìn và ép zoom kẹp xuống minZoom
 const FIT_PADDING = { top: '32px', right: '32px', bottom: '88px', left: '32px' } as const
 
+const WEIGHT_INIT_OPTIONS: { value: WeightInit; label: string }[] = [
+    { value: 'zeros', label: 'Zero' },
+    { value: 'uniform', label: 'Uniform' },
+    { value: 'gaussian', label: 'Gauss' },
+]
+
 function NetworkArchitecture() {
     const { architecture, weights } = useNetwork()
-    const { pulseSignal } = useTraining()
+    const { config, setConfig, lossHistory, ready, pulseSignal } = useTraining()
+    // đã có ít nhất 1 lần state_update kể từ lần reset gần nhất (lossHistory bị
+    // cắt về độ dài 1 mỗi khi weightsReset) — tín hiệu "đang huấn luyện dở",
+    // dùng epoch sẽ không nhạy bằng vì epoch chỉ tăng khi xong nguyên 1 epoch,
+    // còn bấm "Bước" từng step vẫn phải khoá lại cách khởi tạo ngay
+    const hasTrainedSinceReset = lossHistory.length > 1
     const [activeNeuron, setActiveNeuron] = useState<ActiveNeuron | null>(null)
     const [exitingNodes, setExitingNodes] = useState<Node[]>([])
     const prevLiveNodesRef = useRef<Node[]>([])
@@ -134,9 +146,32 @@ function NetworkArchitecture() {
             </div>
 
             <div className="legend">
-                <span><i className="dot dot--pos" />dương</span>
-                <span><i className="dot dot--zero" />0</span>
-                <span><i className="dot dot--neg" />âm</span>
+                <div className="legend-dots">
+                    <span><i className="dot dot--pos" />dương</span>
+                    <span><i className="dot dot--zero" />0</span>
+                    <span><i className="dot dot--neg" />âm</span>
+                </div>
+
+                <div className="legend-spacer" />
+
+                <div className="weight-init">
+                    <span className="weight-init__label">Khởi tạo</span>
+                    <div className="weight-init__group">
+                        {WEIGHT_INIT_OPTIONS.map(({ value, label }) => (
+                            <button
+                                key={value}
+                                type="button"
+                                className={`weight-init__pill${config.weightInit === value ? ' weight-init__pill--active' : ''}`}
+                                // mạng đã chạy bước nào rồi thì phải Reset mới đổi được cách
+                                // khởi tạo — tránh đổi ngầm trọng số đang huấn luyện dở
+                                disabled={!ready || hasTrainedSinceReset}
+                                onClick={() => setConfig({ ...config, weightInit: value })}
+                            >
+                                {label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
             </div>
         </div>
     )
