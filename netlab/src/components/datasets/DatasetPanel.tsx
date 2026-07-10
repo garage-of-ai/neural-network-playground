@@ -13,6 +13,7 @@ function DatasetPanel() {
     // dụng) — người dùng phải bấm "Chọn dataset này" mới apply xuống config thật
     const [previewIndex, setPreviewIndex] = useState(DATASETS.indexOf(config.kind))
     const previewKind = DATASETS[previewIndex]
+    const isSelected = previewKind === config.kind
 
     const gotoDataset = (step: number) => {
         setPreviewIndex((prev) => (prev + step + DATASETS.length) % DATASETS.length)
@@ -46,9 +47,18 @@ function DatasetPanel() {
                     </svg>
                 </button>
             </div>
-            <button className="doodle-btn primary dataset-confirm" onClick={() => setKind(previewKind)} disabled={!ready}>
-                Chọn dataset này
-            </button>
+            {isSelected ? (
+                <div className="dataset-confirm dataset-confirm--selected">
+                    <svg viewBox="0 0 20 20" aria-hidden="true">
+                        <polyline points="4,10 8,14 16,5" />
+                    </svg>
+                    Đã chọn
+                </div>
+            ) : (
+                <button className="doodle-btn primary dataset-confirm" onClick={() => setKind(previewKind)} disabled={!ready}>
+                    Chọn dataset này
+                </button>
+            )}
 
             <div className="slider-row">
                 <label>

@@ -68,6 +68,36 @@
     width: 100%;
     margin: 12px 0 4px;
     text-align: center;
+    box-sizing: border-box;
+    line-height: 1.2;
+}
+
+.dataset-confirm--selected {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 2.5px dashed var(--ink);
+    border-radius: 999px;
+    padding: 8px 18px;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--accent-pos);
+    background: transparent;
+}
+
+.dataset-confirm--selected svg {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+}
+
+.dataset-confirm--selected svg polyline {
+    fill: none;
+    stroke: var(--accent-pos);
+    stroke-width: 2.5px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .slider-row {
