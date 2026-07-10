@@ -5,9 +5,7 @@ import { useDataset } from '../../context/DatasetContext'
 import type { DatasetPoint } from '../../types'
 import './CheckPanel.css'
 
-// khoảng toạ độ thật mà backend dùng để sinh dataset và prediction_grid (xem
-// training_session.py: GRID_RANGE=6) — phải khớp đúng con số này thì điểm dữ
-// liệu mới rơi đúng vị trí trên nền decision boundary, không bị lệch
+
 const DATA_SPACE_RANGE = 6
 
 function drawSparkline(canvas: HTMLCanvasElement, data: number[], color: string) {
@@ -37,25 +35,22 @@ function drawSparkline(canvas: HTMLCanvasElement, data: number[], color: string)
     ctx.fill()
 }
 
-// bảng "Giấy Dó": nền vùng tô nhạt (êm, gần màu giấy — DATA_SPACE nhìn lâu đỡ chói),
-// còn điểm dữ liệu dùng bản đậm cùng tông để vẫn nổi rõ trên nền nhạt đó
+
 const FILL_COLORS: [number, number, number][] = [
-    [224, 163, 139], // hồng đất nhạt — class 0
-    [168, 199, 154], // rêu nhạt — class 1
-    [159, 182, 222], // khói lam — class 2
+    [224, 163, 139],
+    [168, 199, 154],
+    [159, 182, 222],
 ]
 
 const POINT_COLORS: [number, number, number][] = [
-    [191, 90, 60], // đất nung — class 0
-    [47, 133, 88], // lá rừng — class 1
-    [53, 100, 172], // chàm — class 2
+    [191, 90, 60],
+    [47, 133, 88],
+    [53, 100, 172],
 ]
 
 const BOUNDARY_LINE_COLOR: [number, number, number] = [46, 42, 38] // var(--ink)
 const BOUNDARY_PROBE_PX = 2 // khoảng cách (px) dò 2 ô lân cận để phát hiện chỗ đổi lớp/vượt ngưỡng
 
-// vân giấy: cứ mỗi 7px chéo lại ngả nhẹ về màu mực, bù lại việc FILL_COLORS
-// nhạt nên tương phản giữa 2 vùng liền kề tự nó hơi thấp
 const HATCH_SPACING_PX = 7
 const HATCH_MIX_TOWARD_INK = 0.14
 
@@ -70,14 +65,7 @@ function sampleGrid(grid: number[][], resolution: number, w: number, h: number, 
     return grid[gy][gx]
 }
 
-// vẽ decision boundary thật từ prediction_grid server trả về (xem PLAN.API.md
-// mục 1.10). isMultiClass=true (output softmax) -> grid chứa index lớp (0,1,2..);
-// false (sigmoid) -> grid chứa xác suất [0,1]. Cả hai trường hợp đều tô màu
-// phẳng/rời rạc (nhị phân so với ngưỡng 0.5) để đồng nhất cách quan sát.
-// Ngoài tô màu, mỗi pixel còn được so với 2 pixel lân cận (phải, dưới): nếu
-// lớp dự đoán đổi (multi-class) hoặc xác suất vượt qua ngưỡng 0.5 theo hướng
-// khác (binary), pixel đó nằm trên đường biên -> tô màu mực đậm thay vì màu
-// nền, tạo thành 1 đường viền rõ giữa các vùng thay vì chỉ có gradient mờ
+
 function drawBoundary(canvas: HTMLCanvasElement, prediction: PredictionGrid, isMultiClass: boolean) {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
@@ -134,17 +122,13 @@ function rgbCss([r, g, b]: [number, number, number]): string {
     return `rgb(${r}, ${g}, ${b})`
 }
 
-// cùng quy ước lớp với drawBoundary ở trên (nhị phân: label 1 ~ index 0, label
-// 0 ~ index 2; đa lớp: label là index) nhưng dùng POINT_COLORS (đậm hơn
-// FILL_COLORS của nền) để điểm dữ liệu vẫn nổi rõ trên nền màu nhạt
+
 function pointColor(label: number, isMultiClass: boolean): string {
     if (isMultiClass) return rgbCss(POINT_COLORS[Math.round(label) % POINT_COLORS.length])
     return rgbCss(label > 0.5 ? POINT_COLORS[0] : POINT_COLORS[2])
 }
 
-// vẽ đè điểm dữ liệu thật (train đặc, test rỗng viền) lên trên nền decision
-// boundary vừa vẽ bằng putImageData ở trên — PHẢI gọi sau drawBoundary vì
-// putImageData ghi đè toàn bộ canvas, vẽ trước sẽ bị xoá mất
+
 function drawDatasetPoints(canvas: HTMLCanvasElement, trainPoints: DatasetPoint[], testPoints: DatasetPoint[], isMultiClass: boolean) {
     const ctx = canvas.getContext('2d')
     if (!ctx) return

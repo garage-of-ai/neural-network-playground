@@ -3,8 +3,7 @@ import type { DatasetConfig, DatasetKind, DatasetPoint } from '../types'
 import { useEngine } from './EngineContext'
 import { DEFAULT_DATASET_CONFIG } from './defaults'
 
-// tránh spam WS khi người dùng kéo slider trainSplit/noise liên tục — xem
-// ghi chú thiết kế ở PLAN.API.md mục 1.3
+
 const SLIDER_DEBOUNCE_MS = 300
 
 interface DatasetContextValue {
@@ -44,7 +43,7 @@ export function DatasetProvider({ children }: { children: ReactNode }) {
     const setKind = (kind: DatasetKind) => {
         const next = { ...config, kind }
         setConfig(next)
-        // đổi kind là hành động rời rạc (bấm nút xác nhận), gửi ngay không debounce
+        
         sendMessage({ type: 'update_dataset', datasetConfig: next })
     }
 

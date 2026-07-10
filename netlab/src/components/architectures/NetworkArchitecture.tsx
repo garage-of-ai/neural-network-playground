@@ -20,10 +20,6 @@ const edgeTypes: EdgeTypes = { weight: WeightEdge }
 const MIN_ZOOM = 0.8
 const MAX_ZOOM = 1.8
 
-// chừa padding đáy đủ lớn để nội dung không bị layer-label-bar che — bắt
-// buộc phải ghi kèm đơn vị "px", nếu truyền số trần React Flow sẽ hiểu là
-// hệ số tỉ lệ (viewport - viewport/(1+padding)) chứ không phải pixel, khiến
-// padding "32" nuốt gần hết khung nhìn và ép zoom kẹp xuống minZoom
 const FIT_PADDING = { top: '32px', right: '32px', bottom: '88px', left: '32px' } as const
 
 const WEIGHT_INIT_OPTIONS: { value: WeightInit; label: string }[] = [
@@ -61,10 +57,6 @@ function NetworkArchitecture() {
 
     const { nodes: liveNodes, edges } = useNetworkFlowGraph(architecture, weights, activeNeuron, callbacks)
 
-    // unit vừa bị xoá khỏi architecture sẽ biến mất khỏi liveNodes ngay lập
-    // tức — giữ lại bản chụp cuối cùng của node đó (đánh dấu exiting) cho tới
-    // khi animation exit trong NeuronNode chạy xong và tự gọi onExited để dọn
-    // khỏi danh sách này
     if (liveNodes !== prevLiveNodesRef.current) {
         const liveIds = new Set(liveNodes.map((n) => n.id))
         const alreadyExitingIds = new Set(exitingNodes.map((n) => n.id))
@@ -83,10 +75,7 @@ function NetworkArchitecture() {
     const nodes = useMemo(() => [...liveNodes, ...exitingNodes], [liveNodes, exitingNodes])
     const layout = computeLayerPositions(architecture)
 
-    // fit toàn bộ đồ thị vào khung nhìn (như bấm nút "fit view") — chỉ áp
-    // dụng khi người dùng chưa tự pan, để không đè lên thao tác họ đang làm.
-    // Gọi qua instance.fitView() trực tiếp (không dùng setViewport thủ công)
-    // nên luôn phản ánh đúng kích thước node đã đo tại thời điểm gọi
+
     const fitStage = useCallback(() => {
         rfInstanceRef.current?.fitView({ padding: FIT_PADDING, duration: 0 })
     }, [])
@@ -157,8 +146,7 @@ function NetworkArchitecture() {
                                 key={value}
                                 type="button"
                                 className={`weight-init__pill${config.weightInit === value ? ' weight-init__pill--active' : ''}`}
-                                // mạng đã chạy bước nào rồi thì phải Reset mới đổi được cách
-                                // khởi tạo — tránh đổi ngầm trọng số đang huấn luyện dở
+                                // mạng đã chạy bước nào rồi thì phải Reset mới đổi được cách khởi tạo, tránh đổi ngầm trọng số đang huấn luyện dở
                                 disabled={!ready || hasTrainedSinceReset}
                                 onClick={() => setConfig({ ...config, weightInit: value })}
                             >

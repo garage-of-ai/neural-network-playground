@@ -7,15 +7,8 @@ interface LayerLabelBarProps {
     architecture: LayerConfig[]
 }
 
-// Label tách hẳn khỏi lớp đồ thị (không phải React Flow node): chỉ bám theo
-// trục X của viewport khi pan để luôn gióng thẳng đúng cột layer, còn trục Y
-// luôn cố định ở đáy stage — không "trôi" theo khi kéo đồ thị lên/xuống. Nằm
-// ở lớp trên cùng (z-index cao) với nền phủ bán trong suốt, để khi mạng lớn
-// tràn xuống đáy thì phần bị che là neuron/edge chứ không phải label
 function LayerLabelBar({ architecture }: LayerLabelBarProps) {
-    // x/y của viewport là toạ độ màn hình (px), nhưng COL_WIDTH là đơn vị
-    // trong không gian đồ thị (flow-space) — phải nhân zoom mới ra đúng vị trí
-    // px trên màn hình, nếu không label sẽ lệch cột ngay khi người dùng zoom
+
     const { x, zoom } = useViewport()
 
     return (

@@ -5,8 +5,7 @@ export const NEURON_GAP = 14
 export const LABEL_HEIGHT = 40
 export const COL_WIDTH = 200
 
-// layer quá nhiều unit (vd input MNIST) thì chỉ hiển thị 4 unit đầu + 4 unit
-// cuối, kèm dấu "⋮" ở giữa, thay vì vẽ hết
+// layer quá nhiều unit (vd input MNIST) thì chỉ hiển thị 4 unit đầu + 4 unit cuối, kèm dấu "⋮" ở giữa, thay vì vẽ hết
 export const DISPLAY_CAP = 8
 export const DISPLAY_HALF = 4
 
@@ -24,8 +23,6 @@ export interface LayerLayout {
     ellipsis?: { y: number; hiddenCount: number }
 }
 
-// unit nào sẽ được vẽ ra thật (index thật trong weights/architecture), và có
-// cần chèn dấu "..." ở giữa hay không
 export function visibleUnitIndices(units: number): { indices: number[]; withEllipsis: boolean } {
     if (units <= DISPLAY_CAP) return { indices: Array.from({ length: units }, (_, i) => i), withEllipsis: false }
     const first = Array.from({ length: DISPLAY_HALF }, (_, i) => i)
@@ -33,14 +30,12 @@ export function visibleUnitIndices(units: number): { indices: number[]; withElli
     return { indices: [...first, ...last], withEllipsis: true }
 }
 
-// số "hàng" chiếm chỗ theo chiều dọc (unit hiển thị + hàng dấu "...") — dùng để
-// tính chiều cao cần thiết, không dựa vào units thật (có thể rất lớn)
+
 export function displayedRowCount(units: number): number {
     return units <= DISPLAY_CAP ? units : DISPLAY_CAP + 1
 }
 
-// vị trí tính thuần bằng công thức (không đo DOM) — layout hoàn toàn xác định
-// trước bởi số layer/unit hiển thị
+
 export function computeLayerPositions(architecture: LayerConfig[]): LayerLayout[] {
     const maxRows = Math.max(1, ...architecture.map((l) => displayedRowCount(l.units)))
     const stageHeight = LABEL_HEIGHT + maxRows * NEURON_SIZE + (maxRows - 1) * NEURON_GAP
@@ -56,7 +51,6 @@ export function computeLayerPositions(architecture: LayerConfig[]): LayerLayout[
         const neurons: NeuronPosition[] = []
         let ellipsis: LayerLayout['ellipsis']
         indices.forEach((unitIndex, pos) => {
-            // dấu "..." chiếm đúng 1 hàng ở ranh giới giữa nhóm 4 unit đầu và 4 unit cuối
             if (withEllipsis && pos === DISPLAY_HALF) {
                 ellipsis = { y: rowY(pos), hiddenCount: layer.units - DISPLAY_CAP }
             }
@@ -76,8 +70,6 @@ export function stageSize(architecture: LayerConfig[]) {
     }
 }
 
-// đường cong bezier chữ S nằm ngang: 2 điểm điều khiển lệch ngang 45%
-// khoảng cách, giữ nguyên tung độ của điểm đầu/cuối tương ứng
 export function bezierControlPoints(from: Point, to: Point) {
     const dx = (to.x - from.x) * 0.45
     return { cx1: from.x + dx, cy1: from.y, cx2: to.x - dx, cy2: to.y }

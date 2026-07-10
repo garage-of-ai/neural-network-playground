@@ -27,11 +27,7 @@ export interface WeightEdgeData extends Record<string, unknown> {
     isDimmed: boolean
 }
 
-// đưa architecture/weights hiện tại thành nodes/edges cho React Flow — vẫn
-// dùng nguyên computeLayerPositions làm nguồn toạ độ duy nhất, React Flow
-// không tự layout mạng theo lớp. Node trả về ở đây luôn "còn sống"
-// (exiting:false) — việc giữ lại node vừa bị xoá để chạy animation exit là
-// trách nhiệm của component cha (xem NetworkArchitecture.tsx)
+
 export function useNetworkFlowGraph(
     architecture: LayerConfig[],
     weights: NetworkWeights,
@@ -85,10 +81,6 @@ export function useNetworkFlowGraph(
         layout.slice(0, -1).forEach((fromLayer, li) => {
             fromLayer.neurons.forEach(({ unitIndex: i }) => {
                 layout[li + 1].neurons.forEach(({ unitIndex: j }) => {
-                    // weights có thể tạm thời lệch shape với architecture nếu
-                    // state_update của 1 lần đổi kiến trúc trước còn đang bay
-                    // về trong lúc người dùng đã đổi tiếp — fallback 0 thay vì
-                    // crash, giá trị đúng sẽ tự cập nhật ngay sau đó
                     const w = weights[li]?.[i]?.[j] ?? 0
                     const isIncomingToActive =
                         activeNeuron !== null && activeNeuron.layerIndex === li + 1 && activeNeuron.unitIndex === j

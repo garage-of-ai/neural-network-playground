@@ -10,8 +10,7 @@ const COLOR_A = '#e5534b'
 const COLOR_B = '#3fb950'
 const COLOR_C = '#3f8ee0'
 
-// seed theo index thay vì Math.random() thật, để icon không "nhấp nháy" đổi
-// hình mỗi lần component re-render (vd khi kéo slider noise)
+
 function seededRandom(seed: number) {
     const x = Math.sin(seed * 999) * 10000
     return x - Math.floor(x)

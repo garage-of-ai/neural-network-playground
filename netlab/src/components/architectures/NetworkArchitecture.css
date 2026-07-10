@@ -21,9 +21,6 @@
     background-size: 48px 48px;
 }
 
-/* React Flow mặc định vẽ node/edge theo style riêng (khung xám, viền chọn
-   xanh...) — null hoá toàn bộ chrome mặc định để chỉ còn style doodle tự vẽ
-   trong NeuronNode/EllipsisNode/WeightEdge hiển thị */
 .network-stage .react-flow__node {
     background: none;
     border: none;
@@ -32,9 +29,6 @@
     width: auto;
     font-size: inherit;
     text-align: initial;
-    /* nodesDraggable/elementsSelectable=false khiến React Flow tự đặt
-       pointer-events:none trên node wrapper — ép lại để click-to-toggle
-       trên neuron vẫn nhận được sự kiện chuột */
     pointer-events: all !important;
 }
 
@@ -42,8 +36,7 @@
     display: none;
 }
 
-/* controls (zoom/fit) phải luôn nổi trên cùng và bấm được, kể cả khi mạng
-   lớn tràn ra hay label bar (z-index 10) đè lên phần đồ thị bên dưới */
+
 .network-stage .react-flow__controls {
     box-shadow: none;
     gap: 6px;
@@ -69,8 +62,6 @@
     box-shadow: none;
 }
 
-/* elementsSelectable=false khiến React Flow gắn class "inactive" (pointer-
-   events:none) lên mọi edge — ép lại để hover cạnh vẫn hiện tooltip trọng số */
 .network-stage .react-flow__edge.inactive {
     pointer-events: visibleStroke;
 }
@@ -88,8 +79,6 @@
     fill: none;
     stroke-opacity: 0.75;
     stroke-linecap: round;
-    /* hover/tooltip do .edge-hit bên dưới đảm nhiệm — path này chỉ để vẽ,
-       không tự bắt sự kiện, tránh "nuốt" hover ngay tại lõi nét mảnh */
     pointer-events: none;
     transition: stroke-opacity 0.15s, filter 0.15s;
 }
@@ -103,8 +92,7 @@
     stroke-opacity: 0.08;
 }
 
-/* vùng bắt hover trong suốt, rộng cố định (không tỉ lệ theo |weight| như
-   .edge) — cạnh trọng số nhỏ vẫn dễ trỏ chuột mà độ dày hiển thị không đổi */
+
 .edge-hit {
     fill: none;
     stroke: transparent;
@@ -126,11 +114,7 @@
     z-index: 5;
 }
 
-/* hàng label cố định ở đáy network-stage — tách khỏi lớp pan của đồ thị
-   (xem LayerLabelBar.tsx), không di chuyển theo Y khi kéo, chỉ label bên
-   trong dịch theo X để bám đúng cột layer. z-index cao hơn hẳn đồ thị
-   (.react-flow__renderer = 4) để khi mạng lớn tràn xuống đáy, phần bị nền
-   phủ che đi là neuron/edge chứ không phải label */
+
 .layer-label-bar {
     position: absolute;
     left: 8px;
@@ -178,7 +162,7 @@
     transform: scale(1.15);
 }
 
-/* handle của React Flow chỉ dùng để neo cạnh vào tâm node, không hiển thị */
+
 .neuron-handle {
     opacity: 0;
     width: 1px;
@@ -240,8 +224,7 @@
     align-items: center;
 }
 
-/* đẩy khối chú thích màu (trái) và khối chọn khởi tạo trọng số (phải) ra
-   hai đầu .legend, dùng cùng hàng với network-stage bên trên */
+
 .legend-spacer {
     flex: 1;
 }
@@ -277,8 +260,7 @@
     font-weight: 700;
 }
 
-/* các pill dính liền nhau thành một khối bo góc ngoài, viền chung — cùng
-   phong cách doodle (viền đen 2px) với .neuron / .react-flow__controls-button */
+
 .weight-init__group {
     display: flex;
     border: 2px solid var(--ink);

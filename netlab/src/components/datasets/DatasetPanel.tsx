@@ -9,8 +9,7 @@ const DATASETS: DatasetKind[] = ['circle', 'xor', 'gauss', 'spiral', 'moons', 'b
 function DatasetPanel() {
     const { config, ready, setKind, setTrainSplit, setNoise } = useDataset()
 
-    // index carousel đang lướt tới, KHÁC với config.kind (dataset đã thực sự áp
-    // dụng) — người dùng phải bấm "Chọn dataset này" mới apply xuống config thật
+    
     const [previewIndex, setPreviewIndex] = useState(DATASETS.indexOf(config.kind))
     const previewKind = DATASETS[previewIndex]
     const isSelected = previewKind === config.kind

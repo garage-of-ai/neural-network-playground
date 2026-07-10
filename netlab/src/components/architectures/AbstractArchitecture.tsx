@@ -5,9 +5,6 @@ import { useTraining } from '../../context/TrainingContext'
 import ActivationPicker from './ActivationPicker'
 import './AbstractArchitecture.css'
 
-// spring "nảy" khi 1 box mới vừa được chèn — chỉ box THẬT SỰ mới mount (key=
-// layer.id chưa từng render) mới chạy animation này; các box còn lại chỉ dịch
-// chuyển vị trí êm nhờ layout animation của Framer Motion
 const popIn = {
     initial: { scale: 0.25, opacity: 0 },
     animate: { scale: 1, opacity: 1 },
@@ -16,9 +13,6 @@ const popIn = {
 
 const DELETE_CONFIRM_TIMEOUT_MS = 2200
 
-// badge tròn ở góc khối — bấm lần 1 chuyển sang trạng thái "Xoá?" (rung nhẹ),
-// phải bấm thêm lần 2 trong vòng DELETE_CONFIRM_TIMEOUT_MS mới thật sự xoá,
-// tránh xoá nhầm layer chỉ vì lỡ tay bấm 1 cái
 function DeleteLayerButton({ disabled, onConfirm }: { disabled: boolean; onConfirm: () => void }) {
     const [confirming, setConfirming] = useState(false)
     const timerRef = useRef<number | null>(null)
@@ -27,8 +21,6 @@ function DeleteLayerButton({ disabled, onConfirm }: { disabled: boolean; onConfi
         if (timerRef.current !== null) window.clearTimeout(timerRef.current)
     }, [])
 
-    // panel có thể bị khoá ngay giữa lúc đang chờ xác nhận (vd người dùng vừa
-    // bấm xoá vừa bấm "Chạy 1 bước" ở panel khác) — huỷ trạng thái chờ cho nhất quán
     useEffect(() => {
         if (disabled && timerRef.current !== null) {
             window.clearTimeout(timerRef.current)
@@ -68,11 +60,7 @@ function DeleteLayerButton({ disabled, onConfirm }: { disabled: boolean; onConfi
 function AbstractArchitecture() {
     const { architecture, insertLayer, removeLayer, addUnit, removeUnit, setActivation } = useNetwork()
     const { hasTrainedSinceReset } = useTraining()
-    // mạng đã chạy ít nhất 1 bước kể từ lần reset gần nhất → khoá toàn bộ
-    // panel (chèn/xoá layer, đổi unit, đổi hàm kích hoạt) để tránh sửa kiến
-    // trúc ngầm trong lúc trọng số đang huấn luyện dở; chỉ Reset mới mở khoá
-    // lại (cùng tín hiệu hasTrainedSinceReset dùng để khoá nút chọn cách khởi
-    // tạo trọng số ở NetworkArchitecture và mở khoá nút Reset ở TrainingControls)
+
     const locked = hasTrainedSinceReset
 
     return (

@@ -2,9 +2,6 @@ import { motion } from 'motion/react'
 import { Handle, Position, type NodeProps } from '@xyflow/react'
 import type { NeuronNodeData } from '../useNetworkFlowGraph'
 
-// spring "nảy" khi 1 neuron mới vừa được chèn — animation exit dùng chung
-// popScale, chỉ đảo chiều (1 -> 0.25) và tự gọi onExited khi chạy xong để cha
-// xoá node thật khỏi mảng nodes (React Flow không tự animate exit)
 const popScale = { type: 'spring' as const, stiffness: 420, damping: 18 }
 
 function NeuronNode({ id, data }: NodeProps) {

@@ -16,10 +16,9 @@ interface TrainingContextValue {
     accuracyHistory: number[]
     isPlaying: boolean
     pulseSignal: number
-    /** session_init đã được server xử lý xong, an toàn để gửi step/run_epoch/reset */
+    
     ready: boolean
-    /** đã có ít nhất 1 lần state_update kể từ lần reset gần nhất — xem giải
-     * thích chi tiết ở nơi tính giá trị này bên dưới */
+    
     hasTrainedSinceReset: boolean
     step: () => void
     runEpoch: () => void
@@ -39,15 +38,11 @@ export function TrainingProvider({ children }: { children: ReactNode }) {
     const [pulseSignal, setPulseSignal] = useState(0)
     const intervalRef = useRef<number | null>(null)
 
-    // toàn bộ epoch/loss/accuracy/weights giờ do server tính, context này chỉ
-    // là nơi lưu lại state_update mới nhất để component vẽ lại (xem PLAN.API.md 1.8)
+    
     useEffect(() => {
         const unsub = subscribe('state_update', (msg) => {
             setEpoch(msg.epoch)
-            // animation "batch bay qua mạng" chỉ nên chạy khi có 1 bước huấn
-            // luyện thật (step/run_epoch) — các state_update khác (session_init,
-            // reset, đổi kiến trúc, đổi khởi tạo trọng số) đều đánh dấu
-            // weightsReset=true vì chỉ đổi trọng số chứ không có batch nào chạy
+            
             if (!msg.weightsReset) setPulseSignal((n) => n + 1)
             setLossHistory((prev) => {
                 const next = msg.weightsReset ? [msg.loss] : [...prev, msg.loss]
@@ -75,26 +70,16 @@ export function TrainingProvider({ children }: { children: ReactNode }) {
         sendMessage({ type: 'reset' })
     }
 
-    // lossHistory bị cắt về độ dài 1 mỗi khi weightsReset=true (reset, session_init,
-    // đổi kiến trúc, đổi cách khởi tạo trọng số) — dùng làm tín hiệu "đang huấn
-    // luyện dở" để khoá các thao tác không được phép đổi ngầm giữa chừng (đổi
-    // cách khởi tạo trọng số, sửa kiến trúc) và để nút Reset chỉ bật khi có gì
-    // đó thật sự cần reset. Dùng epoch sẽ không nhạy bằng vì epoch chỉ tăng khi
-    // xong nguyên 1 epoch, còn bấm "Bước" từng step vẫn phải khoá lại ngay
+    
     const hasTrainedSinceReset = lossHistory.length > 1
 
     useEffect(() => {
         if (!isPlaying) return
-        // "Chạy liên tục" chạy theo epoch (không phải từng step) để mỗi nhịp
-        // interval huấn luyện trọn 1 epoch, giống nút "Epoch" bấm tay liên tiếp
+        
         intervalRef.current = window.setInterval(runEpoch, PLAY_INTERVAL_MS)
         return () => {
             if (intervalRef.current !== null) window.clearInterval(intervalRef.current)
         }
-        // runEpoch() cố ý không nằm trong deps: nó chỉ gửi 1 WS message không phụ
-        // thuộc state cục bộ nào, nên không có nguy cơ "stale" khi effect chỉ
-        // chạy lại lúc isPlaying đổi
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isPlaying])
 
     return (

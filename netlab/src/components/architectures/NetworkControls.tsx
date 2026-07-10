@@ -2,9 +2,7 @@ import { Controls, ControlButton, useReactFlow, useViewport } from '@xyflow/reac
 
 type FitPadding = { top: `${number}px`; right: `${number}px`; bottom: `${number}px`; left: `${number}px` }
 
-// icon SVG copy nguyên từ Controls mặc định của React Flow (PlusIcon/MinusIcon/
-// FitViewIcon nội bộ, không được export ra ngoài) để giữ đúng hình dạng gốc
-// khi tự dựng lại thứ tự nút
+
 function PlusIcon() {
     return (
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
@@ -35,9 +33,6 @@ interface NetworkControlsProps {
     maxZoom: number
 }
 
-// Controls mặc định của React Flow không cho tuỳ chỉnh thứ tự nút (luôn
-// zoomIn → zoomOut → fitView) — tự dựng 3 ControlButton theo thứ tự
-// zoomIn → fitView → zoomOut để nút "vừa khung" nằm giữa hai nút zoom
 function NetworkControls({ fitPadding, minZoom, maxZoom }: NetworkControlsProps) {
     const { zoomIn, zoomOut, fitView } = useReactFlow()
     const { zoom } = useViewport()

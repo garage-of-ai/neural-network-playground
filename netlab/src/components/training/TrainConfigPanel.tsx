@@ -9,9 +9,6 @@ function TrainConfigPanel() {
 
     const toggleCollapsed = () => setCollapsed((c) => !c)
 
-    // input số cho phép xoá trắng khi gõ (Number('') === 0) — chỉ đẩy lên
-    // server khi giá trị hợp lệ, tránh round-trip vô nghĩa luôn bị backend từ
-    // chối (schema yêu cầu > 0) và hiện banner lỗi mỗi lần người dùng xoá ô
     const setPositiveNumberField = (field: 'learningRate' | 'batchSize' | 'epochs', raw: string) => {
         const value = Number(raw)
         if (!Number.isFinite(value) || value <= 0) return

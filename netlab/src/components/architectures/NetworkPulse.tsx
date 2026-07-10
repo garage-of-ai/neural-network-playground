@@ -4,12 +4,6 @@ import { useViewport } from '@xyflow/react'
 import type { LayerConfig } from '../../types'
 import { samplePathPoints, type LayerLayout } from './layoutMath'
 
-// Mỗi lần 1 batch đi qua mạng là đúng 1 "xung": MỘT ô vuông xuất hiện từ rìa
-// trái, bay vào giữa cột input rồi tách thành 1 ô cho mỗi input node. Từ mỗi
-// node vừa nhận ô, node đó "phân thân": bắn 1 ô theo MỖI cạnh đi ra sang layer
-// kế tiếp — mọi ô trong cùng 1 đợt luôn đến nơi CÙNG LÚC. Lặp tới layer output.
-// (phỏng theo mockups/draft-2/main.js, nhưng phần nội suy vị trí giao cho
-// Framer Motion đảm nhiệm thay vì tự viết vòng lặp requestAnimationFrame)
 const ENTRY_MS = 260
 const SPLIT_MS = 160
 const HOP_MS = 260
@@ -34,13 +28,6 @@ interface NetworkPulseProps {
 function NetworkPulse({ architecture, layout, pulseSignal }: NetworkPulseProps) {
     const [squares, setSquares] = useState<Square[]>([])
     const timeouts = useRef<number[]>([])
-    // so sánh giá trị pulseSignal trước/sau thay vì cờ boolean "đã chạy lần
-    // đầu chưa" — cờ boolean bị StrictMode (dev) phá: mount effect luôn được
-    // gọi 2 lần (gọi → cleanup giả lập → gọi lại) để bắt lỗi thiếu cleanup,
-    // lượt đầu lật cờ xong return sớm (không đăng ký cleanup), lượt 2 thấy cờ
-    // đã false nên lọt qua và bắn pulse thật dù pulseSignal chưa hề đổi. So
-    // sánh giá trị thì an toàn: cả 2 lượt gọi mount đều mang cùng giá trị
-    // pulseSignal nên đều bị nhận đúng là "chưa đổi thật"
     const prevPulseSignalRef = useRef(pulseSignal)
 
     useEffect(() => {
@@ -83,17 +70,12 @@ function NetworkPulse({ architecture, layout, pulseSignal }: NetworkPulseProps) 
             timeouts.current.forEach((t) => window.clearTimeout(t))
             timeouts.current = []
         }
-        // architecture chỉ dùng để giữ closure layout mới nhất khi pulseSignal đổi,
-        // không cần theo dõi layout/architecture riêng — 1 pulse chạy trọn với
-        // đúng layout tại thời điểm bắn ra
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        
     }, [pulseSignal])
 
     const removeSquare = (id: number) => setSquares((prev) => prev.filter((s) => s.id !== id))
 
-    // squares nằm trong svg overlay riêng (anh em của <ReactFlow>), nên cần tự
-    // áp transform pan/zoom của viewport để khớp vị trí với node/edge bên
-    // trong ReactFlow — zoom luôn khoá =1 nhưng x/y đổi khi pan
+    
     const { x: vx, y: vy, zoom } = useViewport()
 
     if (architecture.length === 0) return null

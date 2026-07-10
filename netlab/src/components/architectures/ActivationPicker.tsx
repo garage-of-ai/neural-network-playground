@@ -3,9 +3,7 @@ import { createPortal } from 'react-dom'
 import type { ActivationFn } from '../../types'
 import './ActivationPicker.css'
 
-// softmax cố ý không có trong danh sách này — chỉ output layer đa lớp mới
-// dùng softmax, và giá trị đó do outputShapeForDataset() tự quản theo dataset
-// (xem NetworkContext.tsx), không phải lựa chọn thủ công của người dùng
+
 export const ACTIVATION_OPTIONS: { id: ActivationFn; label: string }[] = [
     { id: 'relu', label: 'ReLU' },
     { id: 'tanh', label: 'Tanh' },
@@ -44,23 +42,12 @@ interface ActivationPickerProps {
     onChange: (activation: ActivationFn) => void
 }
 
-// Popover được portal thẳng vào <body> và định vị bằng position:fixed (toạ độ
-// tự đo bằng JS) thay vì position:absolute lồng trong cây DOM bình thường.
-// Lý do: nút này nằm trong .abstract-scroll (overflow-x:auto) — theo spec CSS,
-// khi 1 trục overflow khác "visible" thì trục còn lại (dù để mặc định hay set
-// "hidden") đều bị ép tính lại thành "auto", nên mọi phần tử absolute con của
-// nó đều bị cắt mất theo chiều dọc nếu vượt khung. Portal ra <body> né hẳn vấn
-// đề này.
 function ActivationPicker({ value, disabled, onChange }: ActivationPickerProps) {
     const [open, setOpen] = useState(false)
     const [coords, setCoords] = useState({ top: 0, left: 0 })
     const btnRef = useRef<HTMLButtonElement>(null)
     const popRef = useRef<HTMLDivElement>(null)
 
-    // đo vị trí NGAY sau khi popover được gắn vào DOM nhưng TRƯỚC khi trình
-    // duyệt vẽ khung hình đó ra (useLayoutEffect, không phải useEffect) — nhờ
-    // vậy không có khung hình nào bị lộ ra ở toạ độ (0,0) tạm thời trước khi
-    // biết đúng vị trí nút
     useLayoutEffect(() => {
         if (!open) return
         const btn = btnRef.current
@@ -86,8 +73,7 @@ function ActivationPicker({ value, disabled, onChange }: ActivationPickerProps) 
         }
 
         window.addEventListener('resize', close)
-        // scroll không nổi bọt (bubble) — bắt ở pha capture trên window mới
-        // nhận được sự kiện cuộn xảy ra bên trong .abstract-scroll
+        
         window.addEventListener('scroll', close, true)
         document.addEventListener('mousedown', onDocMouseDown)
         return () => {
@@ -97,8 +83,6 @@ function ActivationPicker({ value, disabled, onChange }: ActivationPickerProps) 
         }
     }, [open])
 
-    // panel có thể bị khoá ngay trong lúc popover đang mở (vd người dùng vừa mở
-    // popover vừa bấm "Chạy 1 bước" ở panel khác) — tự đóng lại cho nhất quán
     useEffect(() => {
         if (disabled) setOpen(false)
     }, [disabled])

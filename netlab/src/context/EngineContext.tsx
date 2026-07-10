@@ -6,9 +6,7 @@ import { TrainingEngine } from '../engine/trainingEngine'
 type Listener<T extends ServerMessage['type']> = (msg: Extract<ServerMessage, { type: T }>) => void
 
 interface EngineContextValue {
-    /** không còn WebSocket thật — luôn true ngay sau khi engine khởi tạo xong, giữ lại chỉ để không đổi hình dạng interface */
     connected: boolean
-    /** true sau khi state_update đầu tiên được publish — tương đương lúc session_init xử lý xong trước đây */
     ready: boolean
     lastError: string | null
     sendMessage: (msg: ClientMessage) => void
@@ -34,9 +32,6 @@ export function EngineProvider({ children }: { children: ReactNode }) {
         listenersRef.current.get(msg.type)?.forEach((listener) => listener(msg))
     }
 
-    // dispatch thay thế cho ws_training.py: mỗi message gọi thẳng TrainingEngine
-    // tương ứng rồi publish lại đúng những message mà backend cũ từng emit qua WS
-    // (bao gồm cả trường hợp update_training_config không emit gì nếu weightsChanged=false)
     const dispatch = (msg: ClientMessage) => {
         const engine = engineRef.current!
         try {
@@ -92,9 +87,7 @@ export function EngineProvider({ children }: { children: ReactNode }) {
         }
     }
 
-    // guard bằng initializedRef (thay vì cleanup) để React StrictMode double-invoke
-    // effect ở dev không init 2 lần — không cần logic reconnect/cleanup như bản WS
-    // cũ vì không còn kết nối mạng nào để dọn
+
     useEffect(() => {
         if (initializedRef.current) return
         initializedRef.current = true
