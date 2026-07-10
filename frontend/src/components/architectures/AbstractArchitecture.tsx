@@ -1,6 +1,8 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import { useNetwork } from '../../context/NetworkContext'
+import { useTraining } from '../../context/TrainingContext'
+import ActivationPicker from './ActivationPicker'
 import './AbstractArchitecture.css'
 
 // spring "nảy" khi 1 box mới vừa được chèn — chỉ box THẬT SỰ mới mount (key=
@@ -12,40 +14,137 @@ const popIn = {
     transition: { type: 'spring' as const, stiffness: 420, damping: 18 },
 }
 
-function AbstractArchitecture() {
-    const { architecture, insertLayer, removeLayer, addUnit, removeUnit } = useNetwork()
+const DELETE_CONFIRM_TIMEOUT_MS = 2200
+
+// badge tròn ở góc khối — bấm lần 1 chuyển sang trạng thái "Xoá?" (rung nhẹ),
+// phải bấm thêm lần 2 trong vòng DELETE_CONFIRM_TIMEOUT_MS mới thật sự xoá,
+// tránh xoá nhầm layer chỉ vì lỡ tay bấm 1 cái
+function DeleteLayerButton({ disabled, onConfirm }: { disabled: boolean; onConfirm: () => void }) {
+    const [confirming, setConfirming] = useState(false)
+    const timerRef = useRef<number | null>(null)
+
+    useEffect(() => () => {
+        if (timerRef.current !== null) window.clearTimeout(timerRef.current)
+    }, [])
+
+    // panel có thể bị khoá ngay giữa lúc đang chờ xác nhận (vd người dùng vừa
+    // bấm xoá vừa bấm "Chạy 1 bước" ở panel khác) — huỷ trạng thái chờ cho nhất quán
+    useEffect(() => {
+        if (disabled && timerRef.current !== null) {
+            window.clearTimeout(timerRef.current)
+            timerRef.current = null
+            setConfirming(false)
+        }
+    }, [disabled])
+
+    const handleClick = () => {
+        if (confirming) {
+            if (timerRef.current !== null) window.clearTimeout(timerRef.current)
+            timerRef.current = null
+            setConfirming(false)
+            onConfirm()
+            return
+        }
+        setConfirming(true)
+        timerRef.current = window.setTimeout(() => {
+            timerRef.current = null
+            setConfirming(false)
+        }, DELETE_CONFIRM_TIMEOUT_MS)
+    }
 
     return (
-        <div className="panel abstract-panel">
-            <div className="title">Kiến trúc (dạng khối)</div>
+        <button
+            type="button"
+            className={`del-x${confirming ? ' del-x--confirm' : ''}`}
+            disabled={disabled}
+            onClick={handleClick}
+            aria-label={confirming ? 'Bấm lần nữa để xác nhận xoá layer' : 'Xoá layer'}
+        >
+            {confirming ? 'Xoá?' : '✕'}
+        </button>
+    )
+}
+
+function AbstractArchitecture() {
+    const { architecture, insertLayer, removeLayer, addUnit, removeUnit, setActivation } = useNetwork()
+    const { hasTrainedSinceReset } = useTraining()
+    // mạng đã chạy ít nhất 1 bước kể từ lần reset gần nhất → khoá toàn bộ
+    // panel (chèn/xoá layer, đổi unit, đổi hàm kích hoạt) để tránh sửa kiến
+    // trúc ngầm trong lúc trọng số đang huấn luyện dở; chỉ Reset mới mở khoá
+    // lại (cùng tín hiệu hasTrainedSinceReset dùng để khoá nút chọn cách khởi
+    // tạo trọng số ở NetworkArchitecture và mở khoá nút Reset ở TrainingControls)
+    const locked = hasTrainedSinceReset
+
+    return (
+        <div className={`panel abstract-panel${locked ? ' abstract-panel--locked' : ''}`}>
+            <div className="title">
+                Kiến trúc (dạng khối)
+                {locked && <span className="lock-tag">khoá — Reset để chỉnh sửa</span>}
+            </div>
             <div className="abstract-scroll">
                 <div className="abstract-stack">
                     {architecture.map((layer, li) => (
                         <Fragment key={layer.id}>
                             {li > 0 && (
-                                <div className="insert-row">
-                                    <span className="insert-line" />
-                                    <button className="insert-btn" onClick={() => insertLayer(li)}>+ layer</button>
-                                    <span className="insert-line" />
+                                <div className="splice">
+                                    <button
+                                        type="button"
+                                        className="insert-btn"
+                                        disabled={locked}
+                                        onClick={() => insertLayer(li)}
+                                        aria-label="Chèn layer mới"
+                                    >
+                                        +
+                                    </button>
                                 </div>
                             )}
                             {li > 0 && <div className="arrow-right" />}
 
                             <motion.div layout {...popIn} className={`abstract-box abstract-box--${layer.kind}`}>
-                                <div className="box-info">
-                                    <b>{layer.label}</b>
-                                    <span>{layer.units} unit{layer.units > 1 ? 's' : ''}</span>
-                                    {layer.activation && <span className="act-name">({layer.activation})</span>}
-                                </div>
                                 {layer.kind === 'hidden' && (
-                                    <div className="box-controls">
-                                        <div className="unit-controls">
-                                            <button className="mini-btn" onClick={() => removeUnit(li)}>−</button>
-                                            <button className="mini-btn" onClick={() => addUnit(li)}>+</button>
-                                        </div>
-                                        <button className="mini-btn remove-layer" onClick={() => removeLayer(li)}>x</button>
-                                    </div>
+                                    <DeleteLayerButton disabled={locked} onConfirm={() => removeLayer(li)} />
                                 )}
+
+                                <div className="box-label">
+                                    <b>{layer.label}</b>
+                                </div>
+
+                                {layer.kind === 'hidden' ? (
+                                    <div className="unit-controls">
+                                        <button
+                                            className="mini-btn"
+                                            disabled={locked}
+                                            onClick={() => removeUnit(li)}
+                                            aria-label="Giảm số unit"
+                                        >
+                                            −
+                                        </button>
+                                        <span className="unit-num">{layer.units}</span>
+                                        <button
+                                            className="mini-btn"
+                                            disabled={locked}
+                                            onClick={() => addUnit(li)}
+                                            aria-label="Tăng số unit"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <span className="unit-static">
+                                        {layer.units} unit{layer.units > 1 ? 's' : ''}
+                                    </span>
+                                )}
+
+                                {layer.activation &&
+                                    (layer.kind === 'hidden' ? (
+                                        <ActivationPicker
+                                            value={layer.activation}
+                                            disabled={locked}
+                                            onChange={(activation) => setActivation(li, activation)}
+                                        />
+                                    ) : (
+                                        <div className="act-static">{layer.activation}</div>
+                                    ))}
                             </motion.div>
                         </Fragment>
                     ))}

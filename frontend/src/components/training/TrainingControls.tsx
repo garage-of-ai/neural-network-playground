@@ -2,7 +2,7 @@ import { useTraining } from '../../context/TrainingContext'
 import './TrainingControls.css'
 
 function TrainingControls() {
-    const { isPlaying, ready, step, runEpoch, togglePlay, reset } = useTraining()
+    const { isPlaying, ready, hasTrainedSinceReset, step, runEpoch, togglePlay, reset } = useTraining()
 
     return (
         <div className="transport">
@@ -18,7 +18,13 @@ function TrainingControls() {
                     {isPlaying ? 'Tạm dừng' : 'Chạy liên tục'}
                 </button>
             </div>
-            <button className="doodle-btn danger transport-reset" title="Reset" onClick={reset} disabled={!ready}>
+            {/* chưa huấn luyện bước nào (hoặc vừa reset xong) thì chưa có gì để reset */}
+            <button
+                className="doodle-btn danger transport-reset"
+                title="Reset"
+                onClick={reset}
+                disabled={!ready || !hasTrainedSinceReset}
+            >
                 Reset
             </button>
         </div>

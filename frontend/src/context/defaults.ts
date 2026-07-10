@@ -8,8 +8,8 @@ export const makeLayerId = () => `layer-${nextLayerId++}`
 // bao giờ lệch nhau ở lần render đầu tiên (xem PLAN.API.md mục 1.1)
 export const DEFAULT_ARCHITECTURE: LayerConfig[] = [
     { id: makeLayerId(), units: 2, kind: 'input', label: 'Input' },
-    { id: makeLayerId(), units: 4, kind: 'hidden', label: 'Hidden Layer', activation: 'relu' },
-    { id: makeLayerId(), units: 4, kind: 'hidden', label: 'Hidden Layer', activation: 'tanh' },
+    { id: makeLayerId(), units: 4, kind: 'hidden', label: 'Hidden Layer', activation: 'sigmoid' },
+    { id: makeLayerId(), units: 4, kind: 'hidden', label: 'Hidden Layer', activation: 'sigmoid' },
     { id: makeLayerId(), units: 1, kind: 'output', label: 'Output', activation: 'sigmoid' },
 ]
 

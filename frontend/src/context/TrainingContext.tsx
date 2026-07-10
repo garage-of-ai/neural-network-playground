@@ -18,6 +18,9 @@ interface TrainingContextValue {
     pulseSignal: number
     /** session_init đã được server xử lý xong, an toàn để gửi step/run_epoch/reset */
     ready: boolean
+    /** đã có ít nhất 1 lần state_update kể từ lần reset gần nhất — xem giải
+     * thích chi tiết ở nơi tính giá trị này bên dưới */
+    hasTrainedSinceReset: boolean
     step: () => void
     runEpoch: () => void
     togglePlay: () => void
@@ -72,6 +75,14 @@ export function TrainingProvider({ children }: { children: ReactNode }) {
         sendMessage({ type: 'reset' })
     }
 
+    // lossHistory bị cắt về độ dài 1 mỗi khi weightsReset=true (reset, session_init,
+    // đổi kiến trúc, đổi cách khởi tạo trọng số) — dùng làm tín hiệu "đang huấn
+    // luyện dở" để khoá các thao tác không được phép đổi ngầm giữa chừng (đổi
+    // cách khởi tạo trọng số, sửa kiến trúc) và để nút Reset chỉ bật khi có gì
+    // đó thật sự cần reset. Dùng epoch sẽ không nhạy bằng vì epoch chỉ tăng khi
+    // xong nguyên 1 epoch, còn bấm "Bước" từng step vẫn phải khoá lại ngay
+    const hasTrainedSinceReset = lossHistory.length > 1
+
     useEffect(() => {
         if (!isPlaying) return
         intervalRef.current = window.setInterval(step, PLAY_INTERVAL_MS)
@@ -86,7 +97,7 @@ export function TrainingProvider({ children }: { children: ReactNode }) {
 
     return (
         <TrainingContext.Provider
-            value={{ config, setConfig, epoch, lossHistory, accuracyHistory, isPlaying, pulseSignal, ready, step, runEpoch, togglePlay, reset }}
+            value={{ config, setConfig, epoch, lossHistory, accuracyHistory, isPlaying, pulseSignal, ready, hasTrainedSinceReset, step, runEpoch, togglePlay, reset }}
         >
             {children}
         </TrainingContext.Provider>

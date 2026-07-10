@@ -27,6 +27,7 @@ interface NetworkContextValue {
     removeLayer: (index: number) => void
     addUnit: (index: number) => void
     removeUnit: (index: number) => void
+    setActivation: (index: number, activation: ActivationFn) => void
 }
 
 const NetworkContext = createContext<NetworkContextValue | null>(null)
@@ -94,7 +95,7 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
     // trị thật ngay khi state_update từ server về
     const insertLayer = (atIndex: number) => {
         const next = [...architecture]
-        next.splice(atIndex, 0, { id: makeLayerId(), units: 3, kind: 'hidden', label: 'Hidden Layer', activation: 'relu' })
+        next.splice(atIndex, 0, { id: makeLayerId(), units: 3, kind: 'hidden', label: 'Hidden Layer', activation: 'sigmoid' })
         setArchitecture(next)
         setWeights(createRandomWeights(next))
         sendMessage({ type: 'update_architecture', architecture: next })
@@ -122,9 +123,20 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
         sendMessage({ type: 'update_architecture', architecture: next })
     }
 
+    // chỉ layer hidden mới cho đổi hàm kích hoạt — input không có activation,
+    // output do outputShapeForDataset() tự quản để luôn khớp số lớp của dataset
+    // (xem effect phía trên); shape của weights không đổi (không thêm/bớt
+    // unit) nên không cần regenerate weights như các hàm sửa kiến trúc khác
+    const setActivation = (index: number, activation: ActivationFn) => {
+        if (architecture[index]?.kind !== 'hidden') return
+        const next = architecture.map((layer, i) => (i === index ? { ...layer, activation } : layer))
+        setArchitecture(next)
+        sendMessage({ type: 'update_architecture', architecture: next })
+    }
+
     return (
         <NetworkContext.Provider
-            value={{ architecture, weights, predictionGrid, insertLayer, removeLayer, addUnit, removeUnit }}
+            value={{ architecture, weights, predictionGrid, insertLayer, removeLayer, addUnit, removeUnit, setActivation }}
         >
             {children}
         </NetworkContext.Provider>

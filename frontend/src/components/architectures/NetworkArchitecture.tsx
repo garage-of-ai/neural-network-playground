@@ -34,12 +34,7 @@ const WEIGHT_INIT_OPTIONS: { value: WeightInit; label: string }[] = [
 
 function NetworkArchitecture() {
     const { architecture, weights } = useNetwork()
-    const { config, setConfig, lossHistory, ready, pulseSignal } = useTraining()
-    // đã có ít nhất 1 lần state_update kể từ lần reset gần nhất (lossHistory bị
-    // cắt về độ dài 1 mỗi khi weightsReset) — tín hiệu "đang huấn luyện dở",
-    // dùng epoch sẽ không nhạy bằng vì epoch chỉ tăng khi xong nguyên 1 epoch,
-    // còn bấm "Bước" từng step vẫn phải khoá lại cách khởi tạo ngay
-    const hasTrainedSinceReset = lossHistory.length > 1
+    const { config, setConfig, ready, pulseSignal, hasTrainedSinceReset } = useTraining()
     const [activeNeuron, setActiveNeuron] = useState<ActiveNeuron | null>(null)
     const [exitingNodes, setExitingNodes] = useState<Node[]>([])
     const prevLiveNodesRef = useRef<Node[]>([])
