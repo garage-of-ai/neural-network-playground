@@ -1,6 +1,0 @@
-fastapi
-uvicorn[standard]
-numpy
-pydantic
-websockets
-pytest
