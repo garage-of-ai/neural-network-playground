@@ -54,9 +54,9 @@ function sampleGrid(grid: number[][], resolution: number, w: number, h: number, 
 }
 
 // vẽ decision boundary thật từ prediction_grid server trả về (xem PLAN.API.md
-// mục 1.10). isMultiClass=true (output softmax) -> grid chứa index lớp (0,1,2..),
-// tô màu rời rạc theo class; false (sigmoid) -> grid chứa xác suất [0,1], nội
-// suy màu liên tục giữa 2 lớp.
+// mục 1.10). isMultiClass=true (output softmax) -> grid chứa index lớp (0,1,2..);
+// false (sigmoid) -> grid chứa xác suất [0,1]. Cả hai trường hợp đều tô màu
+// phẳng/rời rạc (nhị phân so với ngưỡng 0.5) để đồng nhất cách quan sát.
 // Ngoài tô màu, mỗi pixel còn được so với 2 pixel lân cận (phải, dưới): nếu
 // lớp dự đoán đổi (multi-class) hoặc xác suất vượt qua ngưỡng 0.5 theo hướng
 // khác (binary), pixel đó nằm trên đường biên -> tô màu mực đậm thay vì màu
@@ -101,12 +101,11 @@ function drawBoundary(canvas: HTMLCanvasElement, prediction: PredictionGrid, isM
                 img.data[idx + 1] = g
                 img.data[idx + 2] = b
             } else {
-                const t = Math.max(0, Math.min(1, value))
-                const [r0, g0, b0] = CLASS_COLORS[2] // xanh dương ~ xác suất thấp
-                const [r1, g1, b1] = CLASS_COLORS[0] // đỏ ~ xác suất cao
-                img.data[idx] = Math.round(r0 + t * (r1 - r0))
-                img.data[idx + 1] = Math.round(g0 + t * (g1 - g0))
-                img.data[idx + 2] = Math.round(b0 + t * (b1 - b0))
+                // tô phẳng theo ngưỡng 0.5, cùng quy ước màu với pointColor()
+                const [r, g, b] = value >= 0.5 ? CLASS_COLORS[0] : CLASS_COLORS[2]
+                img.data[idx] = r
+                img.data[idx + 1] = g
+                img.data[idx + 2] = b
             }
             img.data[idx + 3] = 255
         }
@@ -198,14 +197,14 @@ function CheckPanel() {
             <canvas className="chart" ref={lossCanvasRef} />
 
             <div className="chart-label">
-                <span>Accuracy</span>
+                <span>Độ chính xác</span>
                 <span>{Math.round(lastAcc * 100)}%</span>
             </div>
             <canvas className="chart" ref={accCanvasRef} />
 
             <div className="decision-boundary">
                 <div className="chart-label">
-                    <span>Decision boundary</span>
+                    <span>Biên quyết định</span>
                     <span>epoch {epoch}</span>
                 </div>
                 <canvas className="boundary-canvas" ref={boundaryCanvasRef} width={240} height={240} />
