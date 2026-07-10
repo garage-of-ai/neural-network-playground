@@ -30,16 +30,27 @@ function drawDatasetIcon(ctx: CanvasRenderingContext2D, w: number, h: number, ki
     const cy = h / 2
 
     if (kind === 'circle') {
-        for (let i = 0; i < 40; i++) {
+        const maxR = w * 0.46
+        // đĩa trong
+        for (let i = 0; i < 22; i++) {
             const a = seededRandom(i) * Math.PI * 2
-            const r = seededRandom(i + 50) * w * 0.42
-            drawPoint(ctx, cx + Math.cos(a) * r, cy + Math.sin(a) * r, r < w * 0.22 ? COLOR_A : COLOR_B)
+            const r = Math.sqrt(seededRandom(i + 100)) * maxR * 0.32
+            drawPoint(ctx, cx + Math.cos(a) * r, cy + Math.sin(a) * r, COLOR_A)
+        }
+        // vòng ngoài, cách đĩa trong một khoảng trống rõ rệt (giống dữ liệu thật)
+        for (let i = 0; i < 26; i++) {
+            const a = seededRandom(i + 200) * Math.PI * 2
+            const r = maxR * 0.62 + seededRandom(i + 300) * maxR * 0.38
+            drawPoint(ctx, cx + Math.cos(a) * r, cy + Math.sin(a) * r, COLOR_B)
         }
     } else if (kind === 'xor') {
+        // đẩy điểm ra xa 2 trục để tụ rõ về 4 góc, giống nhiễu theo sign(x)/sign(y) của dữ liệu thật
         for (let i = 0; i < 50; i++) {
-            const x = (seededRandom(i) - 0.5) * w * 0.8
-            const y = (seededRandom(i + 70) - 0.5) * h * 0.8
-            drawPoint(ctx, cx + x, cy + y, x * y > 0 ? COLOR_A : COLOR_B)
+            const qx = seededRandom(i * 4) < 0.5 ? -1 : 1
+            const qy = seededRandom(i * 4 + 1) < 0.5 ? -1 : 1
+            const dx = (0.14 + seededRandom(i * 4 + 2) * 0.34) * w
+            const dy = (0.14 + seededRandom(i * 4 + 3) * 0.34) * h
+            drawPoint(ctx, cx + qx * dx, cy + qy * dy, qx * qy > 0 ? COLOR_A : COLOR_B)
         }
     } else if (kind === 'gauss') {
         for (let i = 0; i < 50; i++) {
@@ -49,18 +60,27 @@ function drawDatasetIcon(ctx: CanvasRenderingContext2D, w: number, h: number, ki
             drawPoint(ctx, cx + x, cy + y, side ? COLOR_A : COLOR_B)
         }
     } else if (kind === 'spiral') {
+        // cộng thêm nhiễu nhỏ quanh đường xoắn ốc để không trông "giả", giống dữ liệu thật luôn có noise
         for (let i = 0; i < 60; i++) {
             const t = i / 60
             const a = t * 10
-            const r = t * w * 0.4
-            drawPoint(ctx, cx + Math.cos(a) * r, cy + Math.sin(a) * r, COLOR_A)
-            drawPoint(ctx, cx + Math.cos(a + Math.PI) * r, cy + Math.sin(a + Math.PI) * r, COLOR_B)
+            const r = t * w * 0.42
+            const nx1 = (seededRandom(i * 4) - 0.5) * w * 0.05
+            const ny1 = (seededRandom(i * 4 + 1) - 0.5) * w * 0.05
+            const nx2 = (seededRandom(i * 4 + 2) - 0.5) * w * 0.05
+            const ny2 = (seededRandom(i * 4 + 3) - 0.5) * w * 0.05
+            drawPoint(ctx, cx + Math.cos(a) * r + nx1, cy + Math.sin(a) * r + ny1, COLOR_A)
+            drawPoint(ctx, cx + Math.cos(a + Math.PI) * r + nx2, cy + Math.sin(a + Math.PI) * r + ny2, COLOR_B)
         }
     } else if (kind === 'moons') {
         for (let i = 0; i < 40; i++) {
             const a = seededRandom(i) * Math.PI
-            drawPoint(ctx, cx - w * 0.15 + Math.cos(a) * w * 0.3, cy - h * 0.05 + Math.sin(a) * h * 0.25, COLOR_A)
-            drawPoint(ctx, cx + w * 0.15 - Math.cos(a) * w * 0.3, cy + h * 0.05 - Math.sin(a) * h * 0.25, COLOR_B)
+            const nx1 = (seededRandom(i * 4 + 500) - 0.5) * w * 0.06
+            const ny1 = (seededRandom(i * 4 + 501) - 0.5) * h * 0.06
+            const nx2 = (seededRandom(i * 4 + 502) - 0.5) * w * 0.06
+            const ny2 = (seededRandom(i * 4 + 503) - 0.5) * h * 0.06
+            drawPoint(ctx, cx - w * 0.15 + Math.cos(a) * w * 0.3 + nx1, cy - h * 0.05 + Math.sin(a) * h * 0.25 + ny1, COLOR_A)
+            drawPoint(ctx, cx + w * 0.15 - Math.cos(a) * w * 0.3 + nx2, cy + h * 0.05 - Math.sin(a) * h * 0.25 + ny2, COLOR_B)
         }
     } else if (kind === 'blobs3') {
         const centers: [number, number, string][] = [
