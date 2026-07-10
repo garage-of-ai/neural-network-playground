@@ -10,9 +10,9 @@
   --radius: 16px;
   --pulse-color: #ffb703;
 
-  --sans: 'Comic Sans MS', 'Segoe Print', 'Marker Felt', 'Trebuchet MS', sans-serif;
+  --sans: 'Itim', 'Comic Sans MS', 'Segoe Print', 'Marker Felt', 'Trebuchet MS', sans-serif;
 
-  font: 16px/145% var(--sans);
+  font: 17px/145% var(--sans);
   color: var(--ink);
   background: var(--paper);
 }
@@ -60,7 +60,7 @@ p {
   border-radius: 999px;
   padding: 8px 18px;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 16px;
   cursor: pointer;
   box-shadow: var(--shadow);
   transition: transform 0.1s ease;
@@ -100,7 +100,7 @@ p {
 
 .panel .title {
   margin: 0 0 10px;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: bold;
   display: flex;
   align-items: center;

@@ -10,7 +10,7 @@
     justify-content: center;
     gap: 4px;
     font-family: inherit;
-    font-size: 10.5px;
+    font-size: 12px;
     font-weight: bold;
     color: #5c564c;
 }
@@ -65,7 +65,7 @@
     align-items: center;
     gap: 2px;
     font-family: inherit;
-    font-size: 9.5px;
+    font-size: 11px;
     font-weight: bold;
     color: var(--ink);
 }

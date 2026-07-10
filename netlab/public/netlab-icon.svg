@@ -1,0 +1,24 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- bản "giấy": cùng bố cục tràn khung như bản dark, nhưng trên nền thẻ
+       kem + viền mực + đổ bóng lệch cứng (đồng bộ .card của hệ thống) -->
+  <defs>
+    <clipPath id="frame-network-paper"><rect x="26" y="26" width="460" height="460" rx="106"/></clipPath>
+  </defs>
+
+  <rect x="46" y="46" width="460" height="460" rx="106" fill="#2e2a26"/>
+  <rect x="26" y="26" width="460" height="460" rx="106" fill="#faf3e6"/>
+
+  <g clip-path="url(#frame-network-paper)">
+    <g transform="rotate(-9 256 256)">
+      <path d="M48,112 L422,272" stroke="#3fb950" stroke-width="27" stroke-linecap="round" fill="none"/>
+      <path d="M48,412 L422,272" stroke="#e5534b" stroke-width="27" stroke-linecap="round" fill="none"/>
+
+      <circle cx="48" cy="112" r="79" fill="#cfe8ff" stroke="#2e2a26" stroke-width="16"/>
+      <circle cx="48" cy="412" r="79" fill="#cfe8ff" stroke="#2e2a26" stroke-width="16"/>
+      <circle cx="422" cy="272" r="122" fill="#ffd6d6" stroke="#2e2a26" stroke-width="16"/>
+    </g>
+  </g>
+
+  <!-- viền mực vẽ SAU CÙNG, đè lên trên phần đã cắt để mép luôn sắc nét -->
+  <rect x="26" y="26" width="460" height="460" rx="106" fill="none" stroke="#2e2a26" stroke-width="14"/>
+</svg>

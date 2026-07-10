@@ -9,7 +9,7 @@
 }
 
 .lock-tag {
-    font-size: 10.5px;
+    font-size: 12px;
     font-weight: normal;
     color: #fff;
     background: var(--accent-neg);
@@ -67,7 +67,7 @@
 }
 
 .box-label {
-    font-size: 12.5px;
+    font-size: 14px;
 }
 
 .unit-controls {
@@ -82,14 +82,14 @@
 }
 
 .unit-num {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: bold;
     min-width: 16px;
     text-align: center;
 }
 
 .unit-static {
-    font-size: 12px;
+    font-size: 13px;
     color: #5c564c;
     text-align: center;
 }
@@ -175,7 +175,7 @@
 }
 
 .act-static {
-    font-size: 10.5px;
+    font-size: 12px;
     font-weight: bold;
     color: #5c564c;
     background: #eee2c9;

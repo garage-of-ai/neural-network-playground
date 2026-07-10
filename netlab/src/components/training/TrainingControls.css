@@ -6,7 +6,7 @@
 }
 
 .transport .doodle-btn {
-    font-size: 16px;
+    font-size: 17px;
     border-radius: var(--radius);
     display: flex;
     align-items: center;
@@ -33,12 +33,12 @@
 
 .transport-reset {
     height: 36px;
-    font-size: 14px;
+    font-size: 15px;
     border-radius: 8px;
 }
 
 .transport-status {
-    font-size: 12px;
+    font-size: 13px;
     color: var(--accent-zero);
     text-align: center;
     border-radius: 8px;

@@ -10,7 +10,7 @@
     background: var(--accent-neg);
     color: white;
     box-shadow: var(--shadow);
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .error-banner-close {

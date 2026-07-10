@@ -23,7 +23,7 @@
 }
 
 .dataset-name {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: bold;
     margin-top: 6px;
 }
@@ -75,7 +75,7 @@
 }
 
 .slider-row label {
-    font-size: 13px;
+    font-size: 14px;
     display: flex;
     justify-content: space-between;
 }
