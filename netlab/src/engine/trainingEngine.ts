@@ -14,7 +14,7 @@ import type {
     TrainingConfig,
 } from '../types'
 
-const RESOLUTION = 40
+const RESOLUTION = 240
 const GRID_RANGE = 6
 
 type UpdateFn = (W: number[][], b: number[], dW: number[][], db: number[]) => [number[][], number[]]

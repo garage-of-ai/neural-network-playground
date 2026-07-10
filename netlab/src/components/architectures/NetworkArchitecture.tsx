@@ -17,8 +17,8 @@ import './NetworkArchitecture.css'
 const nodeTypes: NodeTypes = { neuron: NeuronNode, ellipsis: EllipsisNode }
 const edgeTypes: EdgeTypes = { weight: WeightEdge }
 
-const MIN_ZOOM = 0.4
-const MAX_ZOOM = 2
+const MIN_ZOOM = 0.8
+const MAX_ZOOM = 1.8
 
 // chừa padding đáy đủ lớn để nội dung không bị layer-label-bar che — bắt
 // buộc phải ghi kèm đơn vị "px", nếu truyền số trần React Flow sẽ hiểu là

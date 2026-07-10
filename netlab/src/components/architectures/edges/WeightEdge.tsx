@@ -38,7 +38,7 @@ function WeightEdge({ sourceX, sourceY, targetX, targetY, data }: EdgeProps) {
                 className={'edge' + (isDimmed ? ' edge--dim' : '') + (isHot ? ' edge--hot' : '')}
                 d={d}
                 stroke={weightColor(weight)}
-                strokeWidth={Math.max(1, Math.abs(weight) * 3)}
+                strokeWidth={Math.max(1, Math.abs(weight) * 1.5)}
                 fill="none"
             />
             {hovered && (

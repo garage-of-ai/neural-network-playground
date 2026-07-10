@@ -78,8 +78,8 @@ function AbstractArchitecture() {
     return (
         <div className={`panel abstract-panel${locked ? ' abstract-panel--locked' : ''}`}>
             <div className="title">
-                Kiến trúc (dạng khối)
-                {locked && <span className="lock-tag">khoá — Reset để chỉnh sửa</span>}
+                Chỉnh sửa kiến trúc
+                {locked && <span className="lock-tag">Reset để thay đổi kiến trúc</span>}
             </div>
             <div className="abstract-scroll">
                 <div className="abstract-stack">
