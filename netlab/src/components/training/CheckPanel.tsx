@@ -37,15 +37,32 @@ function drawSparkline(canvas: HTMLCanvasElement, data: number[], color: string)
     ctx.fill()
 }
 
-// Màu khớp với 3 màu dùng ở DatasetPreview (COLOR_A/B/C) để nhất quán trong toàn app
-const CLASS_COLORS: [number, number, number][] = [
-    [229, 83, 75], // đỏ  — class 0
-    [63, 185, 80], // xanh lá — class 1
-    [63, 142, 224], // xanh dương — class 2
+// bảng "Giấy Dó": nền vùng tô nhạt (êm, gần màu giấy — DATA_SPACE nhìn lâu đỡ chói),
+// còn điểm dữ liệu dùng bản đậm cùng tông để vẫn nổi rõ trên nền nhạt đó
+const FILL_COLORS: [number, number, number][] = [
+    [224, 163, 139], // hồng đất nhạt — class 0
+    [168, 199, 154], // rêu nhạt — class 1
+    [159, 182, 222], // khói lam — class 2
+]
+
+const POINT_COLORS: [number, number, number][] = [
+    [191, 90, 60], // đất nung — class 0
+    [47, 133, 88], // lá rừng — class 1
+    [53, 100, 172], // chàm — class 2
 ]
 
 const BOUNDARY_LINE_COLOR: [number, number, number] = [46, 42, 38] // var(--ink)
 const BOUNDARY_PROBE_PX = 2 // khoảng cách (px) dò 2 ô lân cận để phát hiện chỗ đổi lớp/vượt ngưỡng
+
+// vân giấy: cứ mỗi 7px chéo lại ngả nhẹ về màu mực, bù lại việc FILL_COLORS
+// nhạt nên tương phản giữa 2 vùng liền kề tự nó hơi thấp
+const HATCH_SPACING_PX = 7
+const HATCH_MIX_TOWARD_INK = 0.14
+
+function mixTowardInk([r, g, b]: [number, number, number], t: number): [number, number, number] {
+    const [ir, ig, ib] = BOUNDARY_LINE_COLOR
+    return [Math.round(r + (ir - r) * t), Math.round(g + (ig - g) * t), Math.round(b + (ib - b) * t)]
+}
 
 function sampleGrid(grid: number[][], resolution: number, w: number, h: number, x: number, y: number): number {
     const gx = Math.min(resolution - 1, Math.max(0, Math.floor((x / w) * resolution)))
@@ -82,10 +99,10 @@ function drawBoundary(canvas: HTMLCanvasElement, prediction: PredictionGrid, isM
 
             let isBoundary: boolean
             if (isMultiClass) {
-                const cHere = Math.round(value) % CLASS_COLORS.length
+                const cHere = Math.round(value) % FILL_COLORS.length
                 isBoundary =
-                    Math.round(valueRight) % CLASS_COLORS.length !== cHere ||
-                    Math.round(valueDown) % CLASS_COLORS.length !== cHere
+                    Math.round(valueRight) % FILL_COLORS.length !== cHere ||
+                    Math.round(valueDown) % FILL_COLORS.length !== cHere
             } else {
                 const hereHigh = value >= 0.5
                 isBoundary = valueRight >= 0.5 !== hereHigh || valueDown >= 0.5 !== hereHigh
@@ -95,14 +112,14 @@ function drawBoundary(canvas: HTMLCanvasElement, prediction: PredictionGrid, isM
                 img.data[idx] = lr
                 img.data[idx + 1] = lg
                 img.data[idx + 2] = lb
-            } else if (isMultiClass) {
-                const [r, g, b] = CLASS_COLORS[Math.round(value) % CLASS_COLORS.length]
-                img.data[idx] = r
-                img.data[idx + 1] = g
-                img.data[idx + 2] = b
             } else {
-                // tô phẳng theo ngưỡng 0.5, cùng quy ước màu với pointColor()
-                const [r, g, b] = value >= 0.5 ? CLASS_COLORS[0] : CLASS_COLORS[2]
+                const fill = isMultiClass
+                    ? FILL_COLORS[Math.round(value) % FILL_COLORS.length]
+                    : // tô phẳng theo ngưỡng 0.5, cùng quy ước màu với pointColor()
+                      FILL_COLORS[value >= 0.5 ? 0 : 2]
+                // vân giấy: phủ đều lên nền để bù độ tương phản thấp giữa các
+                // vùng màu nhạt, không phụ thuộc lớp nào nên không làm lệch màu
+                const [r, g, b] = (x + y) % HATCH_SPACING_PX === 0 ? mixTowardInk(fill, HATCH_MIX_TOWARD_INK) : fill
                 img.data[idx] = r
                 img.data[idx + 1] = g
                 img.data[idx + 2] = b
@@ -117,12 +134,12 @@ function rgbCss([r, g, b]: [number, number, number]): string {
     return `rgb(${r}, ${g}, ${b})`
 }
 
-// cùng quy ước màu với drawBoundary ở trên: nhị phân thì label 1 ~ đỏ (xác
-// suất cao), label 0 ~ xanh dương (xác suất thấp); đa lớp thì label là index
-// nên trỏ thẳng vào CLASS_COLORS
+// cùng quy ước lớp với drawBoundary ở trên (nhị phân: label 1 ~ index 0, label
+// 0 ~ index 2; đa lớp: label là index) nhưng dùng POINT_COLORS (đậm hơn
+// FILL_COLORS của nền) để điểm dữ liệu vẫn nổi rõ trên nền màu nhạt
 function pointColor(label: number, isMultiClass: boolean): string {
-    if (isMultiClass) return rgbCss(CLASS_COLORS[Math.round(label) % CLASS_COLORS.length])
-    return rgbCss(label > 0.5 ? CLASS_COLORS[0] : CLASS_COLORS[2])
+    if (isMultiClass) return rgbCss(POINT_COLORS[Math.round(label) % POINT_COLORS.length])
+    return rgbCss(label > 0.5 ? POINT_COLORS[0] : POINT_COLORS[2])
 }
 
 // vẽ đè điểm dữ liệu thật (train đặc, test rỗng viền) lên trên nền decision
