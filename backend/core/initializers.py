@@ -3,10 +3,10 @@ import numpy as np
 def zeros_init(shape):
     return np.zeros(shape)
 
-def uniform_init(shape, low = -1.0, high = 1.0):
+def uniform_init(shape, low = -0.1, high = 0.1):
     return np.random.uniform(low, high, size=shape)
 
-def gaussian_init(shape, mean = 0.0, std = 1.0):
+def gaussian_init(shape, mean = 0.0, std = 0.01):
     return np.random.normal(mean, std, size=shape)
 
 _INITIALIZERS = {

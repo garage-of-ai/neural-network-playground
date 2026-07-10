@@ -113,6 +113,6 @@ export function samplePathPoints(from: Point, to: Point, steps: number): { xs: n
 }
 
 export function weightColor(w: number): string {
-    if (Math.abs(w) < 0.08) return '#9a938a'
+    if (Math.abs(w) < 0.005) return '#9a938a'
     return w > 0 ? '#3fb950' : '#e5534b'
 }
