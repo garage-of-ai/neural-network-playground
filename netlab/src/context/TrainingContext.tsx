@@ -85,11 +85,13 @@ export function TrainingProvider({ children }: { children: ReactNode }) {
 
     useEffect(() => {
         if (!isPlaying) return
-        intervalRef.current = window.setInterval(step, PLAY_INTERVAL_MS)
+        // "Chạy liên tục" chạy theo epoch (không phải từng step) để mỗi nhịp
+        // interval huấn luyện trọn 1 epoch, giống nút "Epoch" bấm tay liên tiếp
+        intervalRef.current = window.setInterval(runEpoch, PLAY_INTERVAL_MS)
         return () => {
             if (intervalRef.current !== null) window.clearInterval(intervalRef.current)
         }
-        // step() cố ý không nằm trong deps: nó chỉ gửi 1 WS message không phụ
+        // runEpoch() cố ý không nằm trong deps: nó chỉ gửi 1 WS message không phụ
         // thuộc state cục bộ nào, nên không có nguy cơ "stale" khi effect chỉ
         // chạy lại lúc isPlaying đổi
         // eslint-disable-next-line react-hooks/exhaustive-deps
