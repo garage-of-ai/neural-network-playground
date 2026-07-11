@@ -1,9 +1,11 @@
+import { useLocale } from '../../context/LocaleContext'
 import './Footer.css'
 
 function Footer() {
+    const { t } = useLocale()
     return (
         <footer>
-            Lâm Đức Anh - Trường Đại học Công nghệ
+            {t.footer.credit}
         </footer>
     )
 }

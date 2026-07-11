@@ -5,10 +5,10 @@ export const makeLayerId = () => `layer-${nextLayerId++}`
 
 
 export const DEFAULT_ARCHITECTURE: LayerConfig[] = [
-    { id: makeLayerId(), units: 2, kind: 'input', label: 'Input' },
-    { id: makeLayerId(), units: 4, kind: 'hidden', label: 'Hidden Layer', activation: 'sigmoid' },
-    { id: makeLayerId(), units: 4, kind: 'hidden', label: 'Hidden Layer', activation: 'sigmoid' },
-    { id: makeLayerId(), units: 1, kind: 'output', label: 'Output', activation: 'sigmoid' },
+    { id: makeLayerId(), units: 2, kind: 'input' },
+    { id: makeLayerId(), units: 4, kind: 'hidden', activation: 'sigmoid' },
+    { id: makeLayerId(), units: 4, kind: 'hidden', activation: 'sigmoid' },
+    { id: makeLayerId(), units: 1, kind: 'output', activation: 'sigmoid' },
 ]
 
 export const DEFAULT_DATASET_CONFIG: DatasetConfig = { kind: 'circle', trainSplit: 80, noise: 10 }

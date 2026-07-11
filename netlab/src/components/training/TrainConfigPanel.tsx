@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useTraining } from '../../context/TrainingContext'
+import { useLocale } from '../../context/LocaleContext'
 import type { Optimizer } from '../../types'
 import './TrainConfigPanel.css'
 
 function TrainConfigPanel() {
     const { config, ready, setConfig } = useTraining()
+    const { t } = useLocale()
     const [collapsed, setCollapsed] = useState(false)
 
     const toggleCollapsed = () => setCollapsed((c) => !c)
@@ -30,14 +32,14 @@ function TrainConfigPanel() {
                     }
                 }}
             >
-                <span>Cấu hình huấn luyện</span>
+                <span>{t.trainConfig.title}</span>
                 <span className="collapse-arrow">▾</span>
             </div>
 
             <div className="collapsible-body">
                 <div className="collapsible-body-inner">
                     <div className="field-row">
-                        <span>Optimizer</span>
+                        <span>{t.trainConfig.optimizer}</span>
                         <select
                             value={config.optimizer}
                             onChange={(e) => setConfig({ ...config, optimizer: e.target.value as Optimizer })}
@@ -50,7 +52,7 @@ function TrainConfigPanel() {
                     </div>
 
                     <div className="field-row">
-                        <span>Learning rate</span>
+                        <span>{t.trainConfig.learningRate}</span>
                         <input
                             className="value-pill"
                             type="number"
@@ -63,7 +65,7 @@ function TrainConfigPanel() {
                     </div>
 
                     <div className="field-row">
-                        <span>Batch size</span>
+                        <span>{t.trainConfig.batchSize}</span>
                         <input
                             className="value-pill"
                             type="number"
@@ -75,7 +77,7 @@ function TrainConfigPanel() {
                     </div>
 
                     <div className="field-row">
-                        <span>Số epoch</span>
+                        <span>{t.trainConfig.epochs}</span>
                         <input
                             className="value-pill"
                             type="number"
