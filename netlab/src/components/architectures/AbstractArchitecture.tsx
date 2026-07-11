@@ -2,6 +2,7 @@ import { Fragment, useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import { useNetwork } from '../../context/NetworkContext'
 import { useTraining } from '../../context/TrainingContext'
+import { useLocale } from '../../context/LocaleContext'
 import ActivationPicker from './ActivationPicker'
 import './AbstractArchitecture.css'
 
@@ -14,6 +15,7 @@ const popIn = {
 const DELETE_CONFIRM_TIMEOUT_MS = 2200
 
 function DeleteLayerButton({ disabled, onConfirm }: { disabled: boolean; onConfirm: () => void }) {
+    const { t } = useLocale()
     const [confirming, setConfirming] = useState(false)
     const timerRef = useRef<number | null>(null)
 
@@ -50,9 +52,9 @@ function DeleteLayerButton({ disabled, onConfirm }: { disabled: boolean; onConfi
             className={`del-x${confirming ? ' del-x--confirm' : ''}`}
             disabled={disabled}
             onClick={handleClick}
-            aria-label={confirming ? 'Bấm lần nữa để xác nhận xoá layer' : 'Xoá layer'}
+            aria-label={confirming ? t.abstractArchitecture.deleteLayerConfirmAria : t.abstractArchitecture.deleteLayerAria}
         >
-            {confirming ? 'Xoá?' : '✕'}
+            {confirming ? t.abstractArchitecture.deleteConfirmLabel : '✕'}
         </button>
     )
 }
@@ -60,14 +62,15 @@ function DeleteLayerButton({ disabled, onConfirm }: { disabled: boolean; onConfi
 function AbstractArchitecture() {
     const { architecture, insertLayer, removeLayer, addUnit, removeUnit, setActivation } = useNetwork()
     const { hasTrainedSinceReset } = useTraining()
+    const { t } = useLocale()
 
     const locked = hasTrainedSinceReset
 
     return (
         <div className={`panel abstract-panel${locked ? ' abstract-panel--locked' : ''}`}>
             <div className="title">
-                Chỉnh sửa kiến trúc
-                {locked && <span className="lock-tag">Reset để thay đổi kiến trúc</span>}
+                {t.abstractArchitecture.title}
+                {locked && <span className="lock-tag">{t.abstractArchitecture.lockTag}</span>}
             </div>
             <div className="abstract-scroll">
                 <div className="abstract-stack">
@@ -80,7 +83,7 @@ function AbstractArchitecture() {
                                         className="insert-btn"
                                         disabled={locked}
                                         onClick={() => insertLayer(li)}
-                                        aria-label="Chèn layer mới"
+                                        aria-label={t.abstractArchitecture.insertLayerAria}
                                     >
                                         +
                                     </button>
@@ -94,7 +97,7 @@ function AbstractArchitecture() {
                                 )}
 
                                 <div className="box-label">
-                                    <b>{layer.label}</b>
+                                    <b>{t.layerKind[layer.kind]}</b>
                                 </div>
 
                                 {layer.kind === 'hidden' ? (
@@ -103,7 +106,7 @@ function AbstractArchitecture() {
                                             className="mini-btn"
                                             disabled={locked}
                                             onClick={() => removeUnit(li)}
-                                            aria-label="Giảm số unit"
+                                            aria-label={t.abstractArchitecture.decreaseUnitAria}
                                         >
                                             −
                                         </button>
@@ -112,14 +115,14 @@ function AbstractArchitecture() {
                                             className="mini-btn"
                                             disabled={locked}
                                             onClick={() => addUnit(li)}
-                                            aria-label="Tăng số unit"
+                                            aria-label={t.abstractArchitecture.increaseUnitAria}
                                         >
                                             +
                                         </button>
                                     </div>
                                 ) : (
                                     <span className="unit-static">
-                                        {layer.units} unit{layer.units > 1 ? 's' : ''}
+                                        {t.abstractArchitecture.unitCount(layer.units)}
                                     </span>
                                 )}
 

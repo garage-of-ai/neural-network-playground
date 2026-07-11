@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useTraining } from '../../context/TrainingContext'
 import { useNetwork, type PredictionGrid } from '../../context/NetworkContext'
 import { useDataset } from '../../context/DatasetContext'
+import { useLocale } from '../../context/LocaleContext'
 import type { DatasetPoint } from '../../types'
 import './CheckPanel.css'
 
@@ -164,6 +165,7 @@ function CheckPanel() {
     const { lossHistory, accuracyHistory, epoch } = useTraining()
     const { architecture, predictionGrid } = useNetwork()
     const { trainPoints, testPoints } = useDataset()
+    const { t } = useLocale()
 
     const lossCanvasRef = useRef<HTMLCanvasElement>(null)
     const accCanvasRef = useRef<HTMLCanvasElement>(null)
@@ -189,7 +191,7 @@ function CheckPanel() {
 
     return (
         <div className="panel">
-            <div className="title">Kết quả</div>
+            <div className="title">{t.checkPanel.title}</div>
 
             <div className="chart-label">
                 <span>Loss</span>
@@ -198,14 +200,14 @@ function CheckPanel() {
             <canvas className="chart" ref={lossCanvasRef} />
 
             <div className="chart-label">
-                <span>Độ chính xác</span>
+                <span>{t.checkPanel.accuracy}</span>
                 <span>{Math.round(lastAcc * 100)}%</span>
             </div>
             <canvas className="chart" ref={accCanvasRef} />
 
             <div className="decision-boundary">
                 <div className="chart-label">
-                    <span>Biên quyết định</span>
+                    <span>{t.checkPanel.decisionBoundary}</span>
                     <span>epoch {epoch}</span>
                 </div>
                 <canvas className="boundary-canvas" ref={boundaryCanvasRef} width={240} height={240} />

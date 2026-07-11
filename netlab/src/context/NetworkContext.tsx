@@ -71,7 +71,7 @@ export function NetworkProvider({ children }: { children: ReactNode }) {
     
     const insertLayer = (atIndex: number) => {
         const next = [...architecture]
-        next.splice(atIndex, 0, { id: makeLayerId(), units: 3, kind: 'hidden', label: 'Hidden Layer', activation: 'sigmoid' })
+        next.splice(atIndex, 0, { id: makeLayerId(), units: 3, kind: 'hidden', activation: 'sigmoid' })
         setArchitecture(next)
         setWeights(createRandomWeights(next))
         sendMessage({ type: 'update_architecture', architecture: next })

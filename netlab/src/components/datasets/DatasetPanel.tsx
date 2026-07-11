@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import DatasetPreview from './DatasetPreview'
 import { useDataset } from '../../context/DatasetContext'
+import { useLocale } from '../../context/LocaleContext'
 import type { DatasetKind } from '../../types'
 import './DatasetPanel.css'
 
@@ -8,6 +9,7 @@ const DATASETS: DatasetKind[] = ['circle', 'xor', 'gauss', 'spiral', 'moons', 'b
 
 function DatasetPanel() {
     const { config, ready, setKind, setTrainSplit, setNoise } = useDataset()
+    const { t } = useLocale()
 
     
     const [previewIndex, setPreviewIndex] = useState(DATASETS.indexOf(config.kind))
@@ -20,12 +22,12 @@ function DatasetPanel() {
 
     return (
         <div className="panel dataset-panel">
-            <div className="title">Tập dữ liệu</div>
+            <div className="title">{t.datasetPanel.title}</div>
 
             <div className="dataset-carousel">
                 <button
                     className="carousel-arrow carousel-arrow--left"
-                    aria-label="Dataset trước"
+                    aria-label={t.datasetPanel.prevAria}
                     onClick={() => gotoDataset(-1)}
                 >
                     <svg viewBox="0 0 32 32">
@@ -38,7 +40,7 @@ function DatasetPanel() {
                 </div>
                 <button
                     className="carousel-arrow carousel-arrow--right"
-                    aria-label="Dataset kế tiếp"
+                    aria-label={t.datasetPanel.nextAria}
                     onClick={() => gotoDataset(1)}
                 >
                     <svg viewBox="0 0 32 32">
@@ -51,17 +53,17 @@ function DatasetPanel() {
                     <svg viewBox="0 0 20 20" aria-hidden="true">
                         <polyline points="4,10 8,14 16,5" />
                     </svg>
-                    Đã chọn
+                    {t.datasetPanel.selected}
                 </div>
             ) : (
                 <button className="doodle-btn primary dataset-confirm" onClick={() => setKind(previewKind)} disabled={!ready}>
-                    Chọn dataset này
+                    {t.datasetPanel.confirm}
                 </button>
             )}
 
             <div className="slider-row">
                 <label>
-                    <span>Train / Test</span>
+                    <span>{t.datasetPanel.trainTest}</span>
                     <span>{config.trainSplit} / {100 - config.trainSplit}</span>
                 </label>
                 <input
@@ -76,7 +78,7 @@ function DatasetPanel() {
 
             <div className="slider-row">
                 <label>
-                    <span>Nhiễu (noise)</span>
+                    <span>{t.datasetPanel.noise}</span>
                     <span>{config.noise}%</span>
                 </label>
                 <input

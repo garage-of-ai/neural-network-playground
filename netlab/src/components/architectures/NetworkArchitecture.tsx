@@ -3,6 +3,7 @@ import { ReactFlow, type Node, type NodeTypes, type EdgeTypes, type OnMoveStart,
 import '@xyflow/react/dist/base.css'
 import { useNetwork } from '../../context/NetworkContext'
 import { useTraining } from '../../context/TrainingContext'
+import { useLocale } from '../../context/LocaleContext'
 import type { WeightInit } from '../../types'
 import { computeLayerPositions } from './layoutMath'
 import { useNetworkFlowGraph, type ActiveNeuron } from './useNetworkFlowGraph'
@@ -31,6 +32,7 @@ const WEIGHT_INIT_OPTIONS: { value: WeightInit; label: string }[] = [
 function NetworkArchitecture() {
     const { architecture, weights } = useNetwork()
     const { config, setConfig, ready, pulseSignal, hasTrainedSinceReset } = useTraining()
+    const { t } = useLocale()
     const [activeNeuron, setActiveNeuron] = useState<ActiveNeuron | null>(null)
     const [exitingNodes, setExitingNodes] = useState<Node[]>([])
     const prevLiveNodesRef = useRef<Node[]>([])
@@ -99,7 +101,7 @@ function NetworkArchitecture() {
 
     return (
         <div className="panel network-panel">
-            <div className="title">Kiến trúc mạng</div>
+            <div className="title">{t.networkArchitecture.title}</div>
 
             <div className="network-stage" ref={stageRef} onClick={() => setActiveNeuron(null)}>
                 <ReactFlow
@@ -131,15 +133,15 @@ function NetworkArchitecture() {
 
             <div className="legend">
                 <div className="legend-dots">
-                    <span><i className="dot dot--pos" />dương</span>
+                    <span><i className="dot dot--pos" />{t.networkArchitecture.legendPositive}</span>
                     <span><i className="dot dot--zero" />0</span>
-                    <span><i className="dot dot--neg" />âm</span>
+                    <span><i className="dot dot--neg" />{t.networkArchitecture.legendNegative}</span>
                 </div>
 
                 <div className="legend-spacer" />
 
                 <div className="weight-init">
-                    <span className="weight-init__label">Khởi tạo</span>
+                    <span className="weight-init__label">{t.networkArchitecture.weightInitLabel}</span>
                     <div className="weight-init__group">
                         {WEIGHT_INIT_OPTIONS.map(({ value, label }) => (
                             <button

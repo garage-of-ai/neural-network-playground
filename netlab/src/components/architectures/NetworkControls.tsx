@@ -1,4 +1,5 @@
 import { Controls, ControlButton, useReactFlow, useViewport } from '@xyflow/react'
+import { useLocale } from '../../context/LocaleContext'
 
 type FitPadding = { top: `${number}px`; right: `${number}px`; bottom: `${number}px`; left: `${number}px` }
 
@@ -36,13 +37,14 @@ interface NetworkControlsProps {
 function NetworkControls({ fitPadding, minZoom, maxZoom }: NetworkControlsProps) {
     const { zoomIn, zoomOut, fitView } = useReactFlow()
     const { zoom } = useViewport()
+    const { t } = useLocale()
 
     return (
         <Controls showZoom={false} showFitView={false} showInteractive={false} position="top-right">
             <ControlButton
                 className="react-flow__controls-zoomin"
-                title="phóng to"
-                aria-label="phóng to"
+                title={t.networkControls.zoomIn}
+                aria-label={t.networkControls.zoomIn}
                 disabled={zoom >= maxZoom}
                 onClick={() => zoomIn()}
             >
@@ -50,16 +52,16 @@ function NetworkControls({ fitPadding, minZoom, maxZoom }: NetworkControlsProps)
             </ControlButton>
             <ControlButton
                 className="react-flow__controls-fitview"
-                title="vừa khung"
-                aria-label="vừa khung"
+                title={t.networkControls.fitView}
+                aria-label={t.networkControls.fitView}
                 onClick={() => fitView({ padding: fitPadding, duration: 200 })}
             >
                 <FitViewIcon />
             </ControlButton>
             <ControlButton
                 className="react-flow__controls-zoomout"
-                title="thu nhỏ"
-                aria-label="thu nhỏ"
+                title={t.networkControls.zoomOut}
+                aria-label={t.networkControls.zoomOut}
                 disabled={zoom <= minZoom}
                 onClick={() => zoomOut()}
             >

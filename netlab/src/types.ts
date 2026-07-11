@@ -13,7 +13,6 @@ export interface LayerConfig {
     id: string
     units: number
     kind: LayerKind
-    label: string
     activation?: ActivationFn
 }
 

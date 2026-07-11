@@ -1,0 +1,66 @@
+.language-switcher {
+    display: flex;
+    gap: 10px;
+}
+
+.flag-btn {
+    position: relative;
+    width: 48px;
+    height: 36px;
+    padding: 0;
+    border: 2.5px solid var(--ink);
+    border-radius: 6px;
+    cursor: pointer;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    transition: transform 0.1s ease, border-color 0.1s ease;
+}
+
+.flag-btn:hover {
+    transform: translate(-2px, -2px);
+}
+
+.flag-btn:active {
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+.flag-btn.selected {
+    border-color: var(--accent-pos);
+    box-shadow: 2px 2px 0 var(--ink);
+}
+
+.flag-frame {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 3px;
+}
+
+.flag-frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.check-badge {
+    position: absolute;
+    top: -9px;
+    right: -9px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink);
+    background: var(--accent-pos);
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 1;
+    transform: rotate(-15deg);
+    box-shadow: 1.5px 1.5px 0 var(--ink);
+}
