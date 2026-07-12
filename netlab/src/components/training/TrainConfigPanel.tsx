@@ -1,8 +1,13 @@
 import { useState } from 'react'
 import { useTraining } from '../../context/TrainingContext'
 import { useLocale } from '../../context/LocaleContext'
-import type { Optimizer } from '../../types'
+import OptimizerPicker from './OptimizerPicker'
+import NumberPicker from './NumberPicker'
 import './TrainConfigPanel.css'
+
+const LEARNING_RATE_PRESETS = [0.001, 0.003, 0.01, 0.03, 0.1, 0.3]
+const BATCH_SIZE_PRESETS = [1, 4, 8, 16, 32, 64]
+const EPOCHS_PRESETS = [10, 20, 50, 100, 200, 500]
 
 function TrainConfigPanel() {
     const { config, ready, setConfig } = useTraining()
@@ -11,9 +16,7 @@ function TrainConfigPanel() {
 
     const toggleCollapsed = () => setCollapsed((c) => !c)
 
-    const setPositiveNumberField = (field: 'learningRate' | 'batchSize' | 'epochs', raw: string) => {
-        const value = Number(raw)
-        if (!Number.isFinite(value) || value <= 0) return
+    const setNumberField = (field: 'learningRate' | 'batchSize' | 'epochs', value: number) => {
         setConfig({ ...config, [field]: value })
     }
 
@@ -40,51 +43,40 @@ function TrainConfigPanel() {
                 <div className="collapsible-body-inner">
                     <div className="field-row">
                         <span>{t.trainConfig.optimizer}</span>
-                        <select
+                        <OptimizerPicker
                             value={config.optimizer}
-                            onChange={(e) => setConfig({ ...config, optimizer: e.target.value as Optimizer })}
                             disabled={!ready}
-                        >
-                            <option value="sgd">SGD</option>
-                            <option value="sgd-momentum">SGD + Momentum</option>
-                            <option value="adam">Adam</option>
-                        </select>
+                            onChange={(optimizer) => setConfig({ ...config, optimizer })}
+                        />
                     </div>
 
                     <div className="field-row">
                         <span>{t.trainConfig.learningRate}</span>
-                        <input
-                            className="value-pill"
-                            type="number"
-                            step={0.01}
-                            min={0.001}
+                        <NumberPicker
                             value={config.learningRate}
-                            onChange={(e) => setPositiveNumberField('learningRate', e.target.value)}
+                            presets={LEARNING_RATE_PRESETS}
                             disabled={!ready}
+                            onChange={(value) => setNumberField('learningRate', value)}
                         />
                     </div>
 
                     <div className="field-row">
                         <span>{t.trainConfig.batchSize}</span>
-                        <input
-                            className="value-pill"
-                            type="number"
-                            min={1}
+                        <NumberPicker
                             value={config.batchSize}
-                            onChange={(e) => setPositiveNumberField('batchSize', e.target.value)}
+                            presets={BATCH_SIZE_PRESETS}
                             disabled={!ready}
+                            onChange={(value) => setNumberField('batchSize', value)}
                         />
                     </div>
 
                     <div className="field-row">
                         <span>{t.trainConfig.epochs}</span>
-                        <input
-                            className="value-pill"
-                            type="number"
-                            min={1}
+                        <NumberPicker
                             value={config.epochs}
-                            onChange={(e) => setPositiveNumberField('epochs', e.target.value)}
+                            presets={EPOCHS_PRESETS}
                             disabled={!ready}
+                            onChange={(value) => setNumberField('epochs', value)}
                         />
                     </div>
                 </div>

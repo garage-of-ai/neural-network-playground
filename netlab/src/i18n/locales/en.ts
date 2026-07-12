@@ -58,6 +58,9 @@ const en = {
         learningRate: 'Learning rate',
         batchSize: 'Batch size',
         epochs: 'Epochs',
+        orCustomValue: 'or enter a custom value',
+        customValuePlaceholder: 'Custom...',
+        customValueInUse: 'in use',
     },
     footer: {
         credit: 'Lam Duc Anh - University of Engineering and Technology, VNU',

@@ -1,0 +1,151 @@
+.number-picker-trigger {
+    border: 1.5px solid var(--ink);
+    background: #eee2c9;
+    border-radius: 8px;
+    padding: 3px 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: bold;
+    color: #5c564c;
+    width: 90px;
+    text-align: center;
+}
+
+.number-picker-trigger:hover:not(:disabled) {
+    background: #fff2c9;
+}
+
+.number-picker-trigger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.number-picker-popover {
+    position: fixed;
+    z-index: 50;
+    background: #fffaf0;
+    border: 2.5px solid var(--ink);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 8px;
+    width: 176px;
+    animation: numberPickerPopoverIn 0.15s ease;
+}
+
+@keyframes numberPickerPopoverIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.number-picker-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.number-picker-option {
+    position: relative;
+    border: 1.5px solid var(--ink);
+    background: #fff;
+    border-radius: 7px;
+    padding: 7px 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: bold;
+    color: var(--ink);
+}
+
+.number-picker-option:hover {
+    background: #fff2c9;
+}
+
+.number-picker-option--active {
+    background: var(--accent-pos);
+    color: #fff;
+    border-color: var(--accent-pos);
+}
+
+.number-picker-check {
+    position: absolute;
+    top: 1px;
+    right: 4px;
+    font-size: 9px;
+    opacity: 0;
+}
+
+.number-picker-option--active .number-picker-check {
+    opacity: 1;
+}
+
+.number-picker-divider {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 9.5px;
+    color: #9a938a;
+    margin: 0 0 7px;
+}
+
+.number-picker-divider::before,
+.number-picker-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e4dbc8;
+}
+
+.number-picker-custom {
+    position: relative;
+    border: 1.5px dashed #b9ae95;
+    border-radius: 7px;
+    padding: 5px 22px 5px 7px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff;
+}
+
+.number-picker-custom--active {
+    border: 1.5px solid var(--accent-pos);
+    background: #eafaed;
+}
+
+.number-picker-custom input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 12.5px;
+    font-weight: bold;
+    color: var(--ink);
+    width: 100%;
+    min-width: 0;
+}
+
+.number-picker-custom .number-picker-check {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    color: var(--accent-pos);
+    font-size: 11px;
+}
+
+.number-picker-custom--active .number-picker-check {
+    opacity: 1;
+}
+
+.number-picker-tag {
+    font-size: 9px;
+    font-weight: normal;
+    color: var(--accent-pos);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
