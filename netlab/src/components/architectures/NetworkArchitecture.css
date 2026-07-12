@@ -283,9 +283,9 @@
     border-right: none;
 }
 
-.weight-init__pill:hover:not(:disabled) {
+/* .weight-init__pill:hover:not(:disabled) {
     background: #ffe9a8;
-}
+} */
 
 .weight-init__pill--active {
     background: var(--ink);
@@ -294,6 +294,6 @@
 }
 
 .weight-init__pill:disabled {
-    opacity: 0.4;
+    opacity: 0.6;
     cursor: default;
 }
