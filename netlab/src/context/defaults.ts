@@ -15,8 +15,8 @@ export const DEFAULT_DATASET_CONFIG: DatasetConfig = { kind: 'circle', trainSpli
 
 export const DEFAULT_TRAINING_CONFIG: TrainingConfig = {
     optimizer: 'adam',
-    learningRate: 0.03,
+    learningRate: 0.01,
     batchSize: 16,
-    epochs: 200,
+    epochs: 50,
     weightInit: 'uniform',
 }

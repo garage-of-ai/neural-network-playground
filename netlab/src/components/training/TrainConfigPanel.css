@@ -40,13 +40,3 @@
     margin: 8px 0;
     font-size: 14px;
 }
-
-.field-row select,
-.value-pill {
-    font-family: inherit;
-    border: 2px solid var(--ink);
-    border-radius: 8px;
-    padding: 3px 8px;
-    background: #fff;
-    width: 90px;
-}

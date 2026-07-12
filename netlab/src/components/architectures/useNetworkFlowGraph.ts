@@ -19,6 +19,8 @@ export interface NeuronNodeData extends Record<string, unknown> {
 
 export interface EllipsisNodeData extends Record<string, unknown> {
     hiddenCount: number
+    exiting: boolean
+    onExited: (nodeId: string) => void
 }
 
 export interface WeightEdgeData extends Record<string, unknown> {
@@ -72,7 +74,11 @@ export function useNetworkFlowGraph(
                     },
                     draggable: false,
                     selectable: false,
-                    data: { hiddenCount: layout[li].ellipsis.hiddenCount } satisfies EllipsisNodeData,
+                    data: {
+                        hiddenCount: layout[li].ellipsis.hiddenCount,
+                        exiting: false,
+                        onExited: callbacks.onExited,
+                    } satisfies EllipsisNodeData,
                 })
             }
         })

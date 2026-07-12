@@ -60,6 +60,9 @@ const vi: Dictionary = {
         learningRate: 'Learning rate',
         batchSize: 'Batch size',
         epochs: 'Số epoch',
+        orCustomValue: 'hoặc nhập số khác',
+        customValuePlaceholder: 'Tuỳ chỉnh...',
+        customValueInUse: 'đang dùng',
     },
     footer: {
         credit: 'Lâm Đức Anh - Trường Đại học Công nghệ, ĐHQGHN',

@@ -1,32 +1,43 @@
-# React + TypeScript + Vite
+# netlab
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Khu vực chứa mã nguồn chính của ứng dụng, bao gồm cả frontend và backend. Tức là không chỉ phần giao diện, mà toàn bộ phần xây dựng mạng, huấn luyện và tính toán ma trận sẽ được biết bằng TypeScript để chạy thẳng trên trình duyệt mà không phụ thuộc một server backend.
 
-Currently, two official plugins are available:
+## Tech stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- [React 19](https://react.dev) + [TypeScript](https://www.typescriptlang.org)
+- [Vite](https://vitejs.dev): dev server & build
+- [@xyflow/react](https://reactflow.dev): vẽ kiến trúc mạng dạng đồ thị
+- [motion](https://motion.dev): animation
+- [Oxlint](https://oxc.rs): lint
 
-## React Compiler
+## Bắt đầu
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev      # dev server tại http://localhost:5173
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Các lệnh khác:
+
+```bash
+npm run build    # build production vào dist/
+npm run preview  # preview bản build
+npm run lint     # chạy oxlint
+```
+
+## Cấu trúc thư mục
+
+```
+src/
+├── engine/        # Lõi tính toán
+├── components/
+│   ├── architectures/  # Phần giao diện cho kiến trúc mạng
+│   ├── datasets/       # Phần giao diện tập dữ liệu
+│   ├── training/       # Phần giao diện huấn luyện và xem quá trình
+│   └── layouts/        # Các phần giao diện khác
+├── context/       # Các context react
+├── i18n/          # Bản dịch song ngữ Việt-Anh
+└── types.ts       # Định nghĩa kiểu dùng chung
+```
+
+
