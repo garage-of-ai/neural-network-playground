@@ -73,7 +73,7 @@
 .unit-controls {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     gap: 5px;
     border: 1.5px solid var(--ink);
     border-radius: 999px;
@@ -95,8 +95,8 @@
 }
 
 .mini-btn {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     flex-shrink: 0;
     border: 2px solid var(--ink);
     border-radius: 50%;
@@ -124,8 +124,8 @@
     top: -8px;
     right: -8px;
     z-index: 1;
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     border: 2px solid var(--ink);
     border-radius: 50%;
     background: #fff;

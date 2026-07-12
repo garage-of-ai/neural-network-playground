@@ -14,6 +14,30 @@ const popIn = {
 
 const DELETE_CONFIRM_TIMEOUT_MS = 2200
 
+function PlusIcon({ size = 10 }: { size?: number }) {
+    return (
+        <svg viewBox="0 0 10 10" style={{ width: size, height: size, flexShrink: 0 }} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M5 1v8M1 5h8" />
+        </svg>
+    )
+}
+
+function MinusIcon({ size = 10 }: { size?: number }) {
+    return (
+        <svg viewBox="0 0 10 10" style={{ width: size, height: size, flexShrink: 0 }} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M1 5h8" />
+        </svg>
+    )
+}
+
+function CloseIcon({ size = 10 }: { size?: number }) {
+    return (
+        <svg viewBox="0 0 10 10" style={{ width: size, height: size, flexShrink: 0 }} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <path d="M1 1l8 8M9 1l-8 8" />
+        </svg>
+    )
+}
+
 function DeleteLayerButton({ disabled, onConfirm }: { disabled: boolean; onConfirm: () => void }) {
     const { t } = useLocale()
     const [confirming, setConfirming] = useState(false)
@@ -54,7 +78,7 @@ function DeleteLayerButton({ disabled, onConfirm }: { disabled: boolean; onConfi
             onClick={handleClick}
             aria-label={confirming ? t.abstractArchitecture.deleteLayerConfirmAria : t.abstractArchitecture.deleteLayerAria}
         >
-            {confirming ? t.abstractArchitecture.deleteConfirmLabel : '✕'}
+            {confirming ? t.abstractArchitecture.deleteConfirmLabel : <CloseIcon />}
         </button>
     )
 }
@@ -85,7 +109,7 @@ function AbstractArchitecture() {
                                         onClick={() => insertLayer(li)}
                                         aria-label={t.abstractArchitecture.insertLayerAria}
                                     >
-                                        +
+                                        <PlusIcon size={12} />
                                     </button>
                                 </div>
                             )}
@@ -108,7 +132,7 @@ function AbstractArchitecture() {
                                             onClick={() => removeUnit(li)}
                                             aria-label={t.abstractArchitecture.decreaseUnitAria}
                                         >
-                                            −
+                                            <MinusIcon />
                                         </button>
                                         <span className="unit-num">{layer.units}</span>
                                         <button
@@ -117,7 +141,7 @@ function AbstractArchitecture() {
                                             onClick={() => addUnit(li)}
                                             aria-label={t.abstractArchitecture.increaseUnitAria}
                                         >
-                                            +
+                                            <PlusIcon />
                                         </button>
                                     </div>
                                 ) : (
